@@ -999,17 +999,121 @@ body {
     }
 }
 
+}
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE PERFECTION (<768px & <480px)
+   ========================================================================== */
 @media (max-width: 768px) {
+    .navbar {
+        top: 10px;
+        width: calc(100% - 20px);
+        height: 60px;
+        padding: 0 16px;
+    }
+    .nav-container {
+        padding: 0;
+    }
+    .brand-name {
+        font-size: 1.2rem;
+    }
     .nav-links, .nav-actions {
         display: none;
     }
     .mobile-toggle {
         display: block;
     }
+    .hero-section {
+        padding-top: 100px;
+        padding-bottom: 50px;
+    }
+    .hero-container {
+        gap: 32px;
+    }
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 2.2rem;
+        line-height: 1.25;
+        letter-spacing: -0.5px;
+    }
+    .hero-description {
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+    .hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 14px;
+    }
+    .btn-hero-primary, .btn-hero-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    .hero-specs-row {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+    .tilt-card-container {
+        max-width: 100%;
+    }
+    .tilt-card-inner {
+        padding: 20px;
+    }
+    .features-section, .demo-section, .stats-section, .faq-section, .cta-section {
+        padding: 40px 16px;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .feature-card {
+        padding: 24px;
+    }
+    .demo-container {
+        padding: 24px 16px;
+    }
+    .demo-left h2 {
+        font-size: 1.8rem;
+    }
+    .demo-track-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .stat-card {
+        padding: 20px 12px;
+    }
+    .stat-number {
+        font-size: 2.2rem;
+    }
+    .cta-box {
+        padding: 40px 20px;
     }
     .cta-box h2 {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
+    }
+    .cta-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.95rem;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 }
