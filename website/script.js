@@ -30,6 +30,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --------------------------------------------------------------------------
+    // 1b. Smooth Scroll without modifying URL hash
+    // --------------------------------------------------------------------------
+    document.querySelectorAll("[data-scroll]").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute("data-scroll");
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+
+    // --------------------------------------------------------------------------
     // 2. 3D Card Tilt Mouse Effect (Hero Card)
     // --------------------------------------------------------------------------
     const tiltCard = document.getElementById("tilt-card");
