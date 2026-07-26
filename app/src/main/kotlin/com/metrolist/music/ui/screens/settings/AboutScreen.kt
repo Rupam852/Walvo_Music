@@ -110,7 +110,7 @@ private val leadDeveloper = Contributor(
 )
 
 private val communityLinks = listOf(
-    CommunityLink(R.string.credits_view_repo, R.drawable.github, "https://github.com/Rupam852/Walvo-Music"),
+    CommunityLink(R.string.credits_view_repo, R.drawable.github, "https://github.com/Rupam852/Walvo_Music"),
 )
 
 private fun handleEasterEggClick(

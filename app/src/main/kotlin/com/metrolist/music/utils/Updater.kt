@@ -40,7 +40,7 @@ object Updater {
     private var cachedAllReleases: List<ReleaseInfo> = emptyList()
     
     private const val CHECK_INTERVAL_MILLIS = 2 * 60 * 60 * 1000L // 2 hours
-    private const val GITHUB_API_BASE = "https://api.github.com/repos/Rupam852/Walvo-Music"
+    private const val GITHUB_API_BASE = "https://api.github.com/repos/Rupam852/Walvo_Music"
 
     /**
      * Compares two version strings.
@@ -141,7 +141,7 @@ object Updater {
                     versionName = json.getString("tag_name").removePrefix("v"),
                     description = json.optString("body", ""),
                     releaseDate = json.optString("published_at", ""),
-                    htmlUrl = json.optString("html_url", "https://github.com/Rupam852/Walvo-Music/releases/latest"),
+                    htmlUrl = json.optString("html_url", "https://github.com/Rupam852/Walvo_Music/releases/latest"),
                     assets = parseAssets(json.getJSONArray("assets"))
                 )
                 
@@ -182,7 +182,7 @@ object Updater {
                             versionName = releaseObj.getString("name"),
                             description = releaseObj.getString("body"),
                             releaseDate = releaseObj.getString("published_at"),
-                            htmlUrl = releaseObj.optString("html_url", "https://github.com/Rupam852/Walvo-Music/releases/latest"),
+                            htmlUrl = releaseObj.optString("html_url", "https://github.com/Rupam852/Walvo_Music/releases/latest"),
                             assets = parseAssets(releaseObj.getJSONArray("assets"))
                         ))
                     }
@@ -199,7 +199,7 @@ object Updater {
      * Get the download URL for the correct app variant
      */
     fun getDownloadUrlForCurrentVariant(releaseInfo: ReleaseInfo): String {
-        return releaseInfo.htmlUrl.ifEmpty { "https://github.com/Rupam852/Walvo-Music/releases/latest" }
+        return releaseInfo.htmlUrl.ifEmpty { "https://github.com/Rupam852/Walvo_Music/releases/latest" }
     }
 
     /**
