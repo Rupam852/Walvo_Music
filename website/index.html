@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walvo Music - Next-Gen Open Source Music Player</title>
+    <meta name="description" content="Experience YouTube Music like never before. 100% Free, Zero Ads, Offline Downloads, Synced Lyrics, Song Recognizer & Listen Together.">
+    <meta name="keywords" content="Walvo Music, YouTube Music Client, Android Music App, Free Music Player, Synced Lyrics, Open Source Music">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://walvomusic.app/">
+    <meta property="og:title" content="Walvo Music - Ultimate Open Source Music Experience">
+    <meta property="og:description" content="Zero Ads, Offline Playback, Synced Lyrics, Song Recognizer & Listen Together. Download the APK today!">
+    <meta property="og:image" content="https://raw.githubusercontent.com/Rupam852/Walvo_Music/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background Ambient Canvas & Glows -->
+    <canvas id="ambient-canvas"></canvas>
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+    <div class="glow-sphere glow-3"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar glass">
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <div class="brand-logo-wrapper">
+                    <img src="https://raw.githubusercontent.com/Rupam852/Walvo_Music/main/app/src/main/res/drawable/walvo_logo.png" alt="Walvo Music Logo" class="brand-logo">
+                </div>
+                <span class="brand-name">Walvo<span class="accent-text">Music</span></span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#demo" class="nav-link">Live Demo</a>
+                <a href="#stats" class="nav-link">Why Walvo</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+            </div>
+
+            <div class="nav-actions">
+                <a href="https://github.com/Rupam852/Walvo_Music" target="_blank" class="github-btn">
+                    <i class="fa-brands fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://neo-files-transfer.pages.dev/download/826508fec442" class="btn-primary nav-download">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download APK</span>
+                </a>
+            </div>
+            
+            <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Modal -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#features" class="mobile-link">Features</a>
+        <a href="#demo" class="mobile-link">Live Demo</a>
+        <a href="#stats" class="mobile-link">Why Walvo</a>
+        <a href="#faq" class="mobile-link">FAQ</a>
+        <a href="https://github.com/Rupam852/Walvo_Music" target="_blank" class="mobile-link"><i class="fa-brands fa-github"></i> GitHub</a>
+        <a href="https://neo-files-transfer.pages.dev/download/826508fec442" class="btn-primary mobile-btn">
+            <i class="fa-solid fa-download"></i> Download APK
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="badge-pill">
+                    <span class="pulse-dot"></span>
+                    <span>100% Free & Open Source · No Ads</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Feel Every Beat With <br/>
+                    <span class="gradient-text 3d-text">Walvo Music</span>
+                </h1>
+                
+                <p class="hero-description">
+                    The ultimate YouTube Music client engineered for perfection. Experience ad-free streaming, 
+                    synced lyrics, 320kbps audio, song recognizer, and live party jam sessions.
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="https://neo-files-transfer.pages.dev/download/826508fec442" class="btn-hero-primary ripple">
+                        <div class="btn-icon">
+                            <i class="fa-solid fa-download"></i>
+                        </div>
+                        <div class="btn-text">
+                            <span class="btn-subtitle">Direct Download</span>
+                            <span class="btn-title">Download APK</span>
+                        </div>
+                        <div class="btn-glow"></div>
+                    </a>
+
+                    <a href="#demo" class="btn-hero-secondary">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span>Try Live Demo</span>
+                    </a>
+                </div>
+
+                <div class="hero-specs-row">
+                    <div class="spec-item">
+                        <i class="fa-solid fa-shield-halved spec-icon"></i>
+                        <span>Zero Telemetry</span>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-bolt spec-icon"></i>
+                        <span>Lightning Fast</span>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-code-branch spec-icon"></i>
+                        <span>MIT Licensed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Interactive Mockup Card -->
+            <div class="hero-visual">
+                <div class="tilt-card-container" id="tilt-card">
+                    <div class="tilt-card-inner glass">
+                        <div class="player-header">
+                            <div class="now-playing-tag">
+                                <span class="equalizer-bar bar-1"></span>
+                                <span class="equalizer-bar bar-2"></span>
+                                <span class="equalizer-bar bar-3"></span>
+                                <span>NOW PLAYING</span>
+                            </div>
+                            <div class="audio-badge">320kbps HD</div>
+                        </div>
+
+                        <!-- Player Cover & Artwork -->
+                        <div class="cover-art-container">
+                            <div class="disc-spin"></div>
+                            <img src="https://raw.githubusercontent.com/Rupam852/Walvo_Music/main/app/src/main/res/drawable/walvo_logo.png" alt="Album Art" class="cover-art">
+                            <div class="cover-overlay"></div>
+                        </div>
+
+                        <!-- Track Details -->
+                        <div class="track-info">
+                            <h3 class="track-name">Midnight Frequency</h3>
+                            <p class="track-artist">Walvo Original · Neon Horizon</p>
+                        </div>
+
+                        <!-- Live Visualizer Canvas -->
+                        <canvas id="hero-visualizer-canvas" height="50"></canvas>
+
+                        <!-- Synced Lyrics Preview Box -->
+                        <div class="lyrics-preview-box">
+                            <p class="lyric-line previous">Lost in the rhythm of the neon lights</p>
+                            <p class="lyric-line active"><i class="fa-solid fa-quote-left lyric-quote"></i> Dancing with soundwaves through the night</p>
+                            <p class="lyric-line next">Feel the bass echoing in digital sight</p>
+                        </div>
+
+                        <!-- Interactive Controls Mockup -->
+                        <div class="player-controls">
+                            <button class="ctrl-btn"><i class="fa-solid fa-shuffle"></i></button>
+                            <button class="ctrl-btn"><i class="fa-solid fa-backward-step"></i></button>
+                            <button class="ctrl-btn play-main" id="hero-play-btn"><i class="fa-solid fa-play"></i></button>
+                            <button class="ctrl-btn"><i class="fa-solid fa-forward-step"></i></button>
+                            <button class="ctrl-btn"><i class="fa-solid fa-repeat"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Ambient Card Shadow Glow -->
+                    <div class="card-glow-bg"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <span class="section-badge">POWERFUL ENGINE</span>
+            <h2 class="section-title">Built Without Compromise</h2>
+            <p class="section-desc">Designed with Material 3, dynamic theme engine, and extreme performance optimizations.</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Feature Card 1 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper cyan">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <h3>100% Ad-Free Experience</h3>
+                <p>Enjoy uninterrupted music playback with zero popups, zero video ads, and zero sponsor breaks.</p>
+                <div class="card-edge-light"></div>
+            </div>
+
+            <!-- Feature Card 2 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper magenta">
+                    <i class="fa-solid fa-align-left"></i>
+                </div>
+                <h3>Live Synced Lyrics & Translation</h3>
+                <p>Sing along in real-time with synchronized LRC lyrics and AI-powered multi-language translation.</p>
+                <div class="card-edge-light"></div>
+            </div>
+
+            <!-- Feature Card 3 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper purple">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <h3>Instant Song Recognizer</h3>
+                <p>Hear a song playing nearby? Identify any song in seconds with built-in ShazamKit recognition.</p>
+                <div class="card-edge-light"></div>
+            </div>
+
+            <!-- Feature Card 4 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper blue">
+                    <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
+                <h3>Listen Together Jam Sessions</h3>
+                <p>Host live music rooms and sync playback in real-time with your friends anywhere in the world.</p>
+                <div class="card-edge-light"></div>
+            </div>
+
+            <!-- Feature Card 5 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper green">
+                    <i class="fa-solid fa-download"></i>
+                </div>
+                <h3>Offline Downloads & Cache</h3>
+                <p>Download your favorite tracks and playlists to enjoy uninterrupted music offline anywhere.</p>
+                <div class="card-edge-light"></div>
+            </div>
+
+            <!-- Feature Card 6 -->
+            <div class="feature-card glass tilt-feature">
+                <div class="feature-icon-wrapper orange">
+                    <i class="fa-brands fa-discord"></i>
+                </div>
+                <h3>Last.fm & Discord Presence</h3>
+                <p>Auto-scrobble songs to Last.fm and show rich "Now Playing" status to your Discord friends.</p>
+                <div class="card-edge-light"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Live Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="demo-container glass">
+            <div class="demo-left">
+                <span class="section-badge">INTERACTIVE PLAYER</span>
+                <h2>Test The Audio Experience</h2>
+                <p>Experience the reactive audio engine and smooth visualizer right inside your browser.</p>
+                
+                <div class="demo-track-card">
+                    <div class="demo-cover-wrapper">
+                        <img src="https://raw.githubusercontent.com/Rupam852/Walvo_Music/main/app/src/main/res/drawable/walvo_logo.png" alt="Demo Cover">
+                    </div>
+                    <div class="demo-track-details">
+                        <h4>Cybernetic Beats</h4>
+                        <p>Walvo Synthwave Session</p>
+                        <div class="demo-progress-bar" id="demo-progress-container">
+                            <div class="demo-progress-fill" id="demo-progress-fill"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="curr-time">0:00</span>
+                            <span id="dur-time">0:30</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-controls">
+                    <button class="demo-btn-main" id="demo-play-btn">
+                        <i class="fa-solid fa-play" id="demo-play-icon"></i>
+                        <span id="demo-play-text">Play Audio Demo</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-right">
+                <canvas id="interactive-waveform-canvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats & Comparisons -->
+    <section class="stats-section" id="stats">
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <div class="stat-number">320<span class="stat-unit">kbps</span></div>
+                <div class="stat-label">Ultra HD Audio Quality</div>
+            </div>
+
+            <div class="stat-card glass">
+                <div class="stat-number">0<span class="stat-unit">Ads</span></div>
+                <div class="stat-label">100% Interruption Free</div>
+            </div>
+
+            <div class="stat-card glass">
+                <div class="stat-number">100<span class="stat-unit">%</span></div>
+                <div class="stat-label">Private & Open Source</div>
+            </div>
+
+            <div class="stat-card glass">
+                <div class="stat-number">$0<span class="stat-unit">Free</span></div>
+                <div class="stat-label">MIT Licensed Freedom</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="section-header">
+            <span class="section-badge">FREQUENTLY ASKED</span>
+            <h2 class="section-title">Got Questions? We Have Answers</h2>
+        </div>
+
+        <div class="faq-accordion">
+            <div class="faq-item glass">
+                <div class="faq-question">
+                    <span>Is Walvo Music completely free to use?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! Walvo Music is 100% free and open-source under the MIT License. There are no subscriptions, hidden fees, or advertisements.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass">
+                <div class="faq-question">
+                    <span>Do I need to log in with a Google account?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>No, login is optional! You can stream music, search, and download tracks without logging in. Logging in allows you to access your personal YouTube Music playlists and liked songs.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass">
+                <div class="faq-question">
+                    <span>Is my personal data safe?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolute 100% privacy. There is zero telemetry, no tracking SDKs, no analytics, and no remote data collection. All your history and playlists stay strictly on your device.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass">
+                <div class="faq-question">
+                    <span>How do I update the app in the future?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Walvo Music has a built-in Auto-Updater that checks for official releases directly from our GitHub repository.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="cta-section">
+        <div class="cta-box glass">
+            <div class="cta-glow"></div>
+            <h2>Ready to Elevate Your Music Experience?</h2>
+            <p>Download Walvo Music APK now and enjoy pure, uninterrupted music on your Android device.</p>
+            <div class="cta-actions">
+                <a href="https://neo-files-transfer.pages.dev/download/826508fec442" class="btn-hero-primary ripple">
+                    <div class="btn-icon">
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                    <div class="btn-text">
+                        <span class="btn-subtitle">Direct Download</span>
+                        <span class="btn-title">Get Walvo Music APK</span>
+                    </div>
+                </a>
+                <a href="https://github.com/Rupam852/Walvo_Music" target="_blank" class="btn-hero-secondary">
+                    <i class="fa-brands fa-github"></i>
+                    <span>Star on GitHub</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="https://raw.githubusercontent.com/Rupam852/Walvo_Music/main/app/src/main/res/drawable/walvo_logo.png" alt="Walvo Logo" class="footer-logo">
+                <span class="brand-name">Walvo<span class="accent-text">Music</span></span>
+            </div>
+            <p class="footer-text">© 2026 Walvo Music by Rupam. Licensed under MIT. Made with ❤️ for music lovers.</p>
+            <div class="footer-links">
+                <a href="https://github.com/Rupam852/Walvo_Music" target="_blank">GitHub</a>
+                <a href="https://github.com/Rupam852/Walvo_Music/releases" target="_blank">Releases</a>
+                <a href="https://github.com/Rupam852/Walvo_Music/blob/main/LICENSE" target="_blank">MIT License</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>

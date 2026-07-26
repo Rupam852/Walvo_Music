@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "walvo-music-landing",
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
