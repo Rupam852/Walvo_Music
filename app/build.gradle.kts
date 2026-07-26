@@ -186,8 +186,10 @@ android {
             isDebuggable = false
             signingConfig = if (file("keystore/release.keystore").exists()) {
                 signingConfigs.getByName("release")
-            } else {
+            } else if (persistentDebugKeystoreFile.exists()) {
                 signingConfigs.getByName("persistentDebug")
+            } else {
+                signingConfigs.getByName("debug")
             }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
