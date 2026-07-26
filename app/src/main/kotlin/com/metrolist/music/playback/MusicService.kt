@@ -4012,7 +4012,9 @@ class MusicService :
                 CHANNEL_ID,
                 getString(R.string.music_player),
                 NotificationManager.IMPORTANCE_LOW,
-            ),
+            ).apply {
+                setShowBadge(false)
+            },
         )
     }
 

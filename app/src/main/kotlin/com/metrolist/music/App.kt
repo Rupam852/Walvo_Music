@@ -195,6 +195,7 @@ class App :
                 NotificationManager.IMPORTANCE_DEFAULT,
             ).apply {
                 description = getString(R.string.update_channel_desc)
+                setShowBadge(false)
             }
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(channel)
