@@ -162,9 +162,13 @@ android {
         }
         create("release") {
             storeFile = file("keystore/release.keystore")
-            storePassword = System.getenv("STORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            storePassword = System.getenv("STORE_PASSWORD") ?: "walvomusic123"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "releaseKey"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "walvomusic123"
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = true
         }
         getByName("debug") {
             keyAlias = "androiddebugkey"
