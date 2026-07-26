@@ -7,7 +7,7 @@
 <br/>
 
 [![Latest Release](https://img.shields.io/github/v/release/Rupam852/Walvo_Music?style=for-the-badge&labelColor=11131E&color=365194)](https://github.com/Rupam852/Walvo_Music/releases)
-[![License](https://img.shields.io/github/license/Rupam852/Walvo_Music?style=for-the-badge&labelColor=11131E&color=365194)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&labelColor=11131E&color=365194)](LICENSE)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Rupam852%2FWalvo__Music-blue?style=for-the-badge&logo=github&labelColor=11131E)](https://github.com/Rupam852/Walvo_Music)
 
 <br/>
