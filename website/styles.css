@@ -94,6 +94,7 @@ body {
 .gradient-text {
     background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 40%, #FF0844 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
 }
@@ -997,8 +998,6 @@ body {
     .demo-container {
         grid-template-columns: 1fr;
     }
-}
-
 }
 
 /* ==========================================================================
