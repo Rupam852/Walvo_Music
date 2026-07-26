@@ -6,6 +6,7 @@
 
 <br/>
 
+[![Official Website](https://img.shields.io/badge/Website-walvo--music.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=11131E)](https://walvo-music.vercel.app)
 [![Latest Release](https://img.shields.io/github/v/release/Rupam852/Walvo_Music?style=for-the-badge&labelColor=11131E&color=365194)](https://github.com/Rupam852/Walvo_Music/releases)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&labelColor=11131E&color=365194)](LICENSE)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Rupam852%2FWalvo__Music-blue?style=for-the-badge&logo=github&labelColor=11131E)](https://github.com/Rupam852/Walvo_Music)
@@ -13,7 +14,7 @@
 
 <br/>
 
-[**Download APK**](#-download) · [**Features**](#-features) · [**Build Variants**](#-build-variants) · [**Building**](#-building-from-source) · [**Tech Stack**](#-tech-stack) · [**License**](#-license)
+[🌐 **Website**](https://walvo-music.vercel.app) · [**Download APK**](#-download) · [**Features**](#-features) · [**Build Variants**](#-build-variants) · [**Building**](#-building-from-source) · [**Tech Stack**](#-tech-stack) · [**License**](#-license)
 
 </div>
 
@@ -82,6 +83,7 @@ Walvo Music supports multiple build variants tailored for different user needs:
 
 Get the latest signed release APK directly from our official sources:
 
+- 🌐 **[Official Website](https://walvo-music.vercel.app)**
 - 🚀 **[Download Walvo Music Release APK](https://neo-files-transfer.pages.dev/download/826508fec442)**
 - 📦 **[GitHub Releases Page](https://github.com/Rupam852/Walvo_Music/releases)**
 
