@@ -30,6 +30,9 @@ jobs:
           - variant: gms
             variantName: Gms
 
+    env:
+      KEYSTORE_SECRET: ${{ secrets.KEYSTORE }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,7 +63,7 @@ jobs:
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
 
       - name: Sign APK
-        if: ${{ secrets.KEYSTORE != '' }}
+        if: env.KEYSTORE_SECRET != ''
         uses: ilharp/sign-android-release@v2.0.0
         with:
           releaseDir: app/build/outputs/apk/${{ matrix.variant }}/release/
