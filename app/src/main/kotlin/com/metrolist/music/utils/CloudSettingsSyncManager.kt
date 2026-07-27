@@ -41,21 +41,26 @@ object CloudSettingsSyncManager {
     private const val NEON_JDBC_URL =
         "jdbc:postgresql://ep-billowing-moon-azjx44np-pooler.c-3.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require&user=neondb_owner&password=npg_XYRETgsA1Bj8"
 
+    @Volatile
     private var tableChecked = false
 
+    @Volatile
+    private var isSyncing = false
+
     private fun getConnection(): java.sql.Connection? {
-        return try {
+        return runCatching {
             Class.forName("org.postgresql.Driver")
             val props = Properties().apply {
                 setProperty("user", "neondb_owner")
                 setProperty("password", "npg_XYRETgsA1Bj8")
                 setProperty("sslmode", "require")
+                setProperty("connectTimeout", "5")
+                setProperty("socketTimeout", "5")
             }
             DriverManager.getConnection(NEON_JDBC_URL, props)
-        } catch (e: Exception) {
-            Timber.e(e, "[CloudSync] Failed to establish Neon PostgreSQL JDBC connection")
-            null
-        }
+        }.onFailure { e ->
+            Timber.w("[CloudSync] Failed to establish Neon PostgreSQL connection: ${e.message}")
+        }.getOrNull()
     }
 
     private fun ensureTableExists(conn: java.sql.Connection) {
@@ -74,26 +79,29 @@ object CloudSettingsSyncManager {
                 stmt.execute(sql)
             }
             tableChecked = true
-            Timber.d("[CloudSync] Neon PostgreSQL table user_app_settings verified/created successfully")
-        } catch (e: Exception) {
+            Timber.d("[CloudSync] Neon PostgreSQL table user_app_settings verified")
+        } catch (e: Throwable) {
             Timber.e(e, "[CloudSync] Error creating user_app_settings table")
         }
     }
 
     private fun extractUserId(cookie: String, email: String): String? {
-        val parsed = parseCookieString(cookie)
-        val sapisid = parsed["SAPISID"] ?: parsed["__Secure-3PAPISID"]
-        if (!sapisid.isNullOrBlank()) return sapisid.trim()
-        if (email.isNotBlank()) return email.trim().lowercase()
-        return null
+        return runCatching {
+            val parsed = parseCookieString(cookie)
+            val sapisid = parsed["SAPISID"] ?: parsed["__Secure-3PAPISID"]
+            if (!sapisid.isNullOrBlank()) return sapisid.trim()
+            if (email.isNotBlank()) return email.trim().lowercase()
+            null
+        }.getOrNull()
     }
 
     suspend fun syncLocalSettingsToCloud(context: Context) = withContext(Dispatchers.IO) {
+        if (isSyncing) return@withContext
+        isSyncing = true
         try {
             val prefs = context.dataStore.data.first()
             val autoSync = prefs[AutoSyncAppSettingsKey] ?: true
             if (!autoSync) {
-                Timber.d("[CloudSync] Auto sync app settings is disabled by user")
                 return@withContext
             }
 
@@ -101,11 +109,7 @@ object CloudSettingsSyncManager {
             val email = prefs[AccountEmailKey].orEmpty()
             val name = prefs[AccountNameKey].orEmpty()
 
-            val userId = extractUserId(cookie, email)
-            if (userId == null) {
-                Timber.d("[CloudSync] User not logged in, skipping cloud settings sync")
-                return@withContext
-            }
+            val userId = extractUserId(cookie, email) ?: return@withContext
 
             val json = JSONObject().apply {
                 put("contentLanguage", prefs[ContentLanguageKey] ?: SYSTEM_DEFAULT)
@@ -144,14 +148,18 @@ object CloudSettingsSyncManager {
                     stmt.setString(4, json.toString())
                     stmt.executeUpdate()
                 }
-                Timber.d("[CloudSync] Successfully backed up settings to Neon PostgreSQL for user: $userId")
+                Timber.d("[CloudSync] Successfully backed up settings for user: $userId")
             }
-        } catch (e: Exception) {
-            Timber.e(e, "[CloudSync] Exception during syncLocalSettingsToCloud")
+        } catch (e: Throwable) {
+            Timber.e(e, "[CloudSync] Throwable in syncLocalSettingsToCloud")
+        } finally {
+            isSyncing = false
         }
     }
 
     suspend fun restoreSettingsFromCloudIfAvailable(context: Context) = withContext(Dispatchers.IO) {
+        if (isSyncing) return@withContext
+        isSyncing = true
         try {
             val prefs = context.dataStore.data.first()
             val autoSync = prefs[AutoSyncAppSettingsKey] ?: true
@@ -176,8 +184,7 @@ object CloudSettingsSyncManager {
                 }
 
                 if (settingsJsonStr.isNullOrBlank()) {
-                    Timber.d("[CloudSync] No cloud backup found for user: $userId. Uploading initial settings.")
-                    syncLocalSettingsToCloud(context)
+                    Timber.d("[CloudSync] No cloud backup found for user: $userId.")
                     return@use
                 }
 
@@ -203,10 +210,12 @@ object CloudSettingsSyncManager {
                     if (json.has("showArtistSubscriberCount")) mutablePrefs[ShowArtistSubscriberCountKey] = json.getBoolean("showArtistSubscriberCount")
                     if (json.has("showMonthlyListeners")) mutablePrefs[ShowMonthlyListenersKey] = json.getBoolean("showMonthlyListeners")
                 }
-                Timber.d("[CloudSync] Successfully restored settings from Neon PostgreSQL for user: $userId")
+                Timber.d("[CloudSync] Successfully restored settings for user: $userId")
             }
-        } catch (e: Exception) {
-            Timber.e(e, "[CloudSync] Exception during restoreSettingsFromCloudIfAvailable")
+        } catch (e: Throwable) {
+            Timber.e(e, "[CloudSync] Throwable in restoreSettingsFromCloudIfAvailable")
+        } finally {
+            isSyncing = false
         }
     }
 }

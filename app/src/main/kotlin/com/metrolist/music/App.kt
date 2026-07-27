@@ -289,15 +289,6 @@ class App :
                         )
                 }
         }
-
-        applicationScope.launch(Dispatchers.IO) {
-            com.metrolist.music.utils.CloudSettingsSyncManager.restoreSettingsFromCloudIfAvailable(this@App)
-            dataStore.data
-                .distinctUntilChanged()
-                .collect {
-                    com.metrolist.music.utils.CloudSettingsSyncManager.syncLocalSettingsToCloud(this@App)
-                }
-        }
     }
 
     @Volatile
