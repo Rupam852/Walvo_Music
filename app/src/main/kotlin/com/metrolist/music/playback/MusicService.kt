@@ -4125,7 +4125,7 @@ class MusicService :
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        if (dataStore.get(StopMusicOnTaskClearKey, false)) {
+        if (dataStore.get(StopMusicOnTaskClearKey, true)) {
             if (!::player.isInitialized) {
                 stopSelf()
                 return

@@ -345,7 +345,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         // Use effective playing state so Cast (local player paused, remote playing) is included.
         val stopServiceOnClear =
-            dataStore.get(StopMusicOnTaskClearKey, false) &&
+            dataStore.get(StopMusicOnTaskClearKey, true) &&
                 playerConnection?.isEffectivelyPlaying?.value == true &&
                 isFinishing
 
