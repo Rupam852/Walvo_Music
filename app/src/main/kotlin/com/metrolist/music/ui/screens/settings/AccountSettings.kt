@@ -30,6 +30,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -382,7 +383,7 @@ fun AccountSettings(
                     Material3SettingsItem(
                         title = { Text(stringResource(R.string.auto_sync_app_settings)) },
                         description = { Text(stringResource(R.string.auto_sync_app_settings_desc)) },
-                        icon = painterResource(R.drawable.cloud_upload),
+                        icon = painterResource(R.drawable.sync),
                         trailingContent = {
                             Switch(
                                 enabled = isLoggedIn,
