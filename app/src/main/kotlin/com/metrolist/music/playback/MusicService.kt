@@ -4128,6 +4128,7 @@ class MusicService :
         if (dataStore.get(StopMusicOnTaskClearKey, true)) {
             if (!::player.isInitialized) {
                 stopSelf()
+                kotlin.system.exitProcess(0)
                 return
             }
             // Remote playback (Cast) is independent of the local ExoPlayer; ending the session
@@ -4140,8 +4141,6 @@ class MusicService :
                 ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                 controllerFuture?.let { MediaController.releaseFuture(it) }
                 controllerFuture = null
-                // Media3: coordinates notification/foreground teardown and stopSelf; required when
-                // playback was ongoing (default super.onTaskRemoved keeps the service alive).
                 pauseAllPlayersAndStopSelf()
             }.onFailure { e ->
                 Timber.tag(TAG).e(e, "Failed to stop playback on task clear")
@@ -4149,6 +4148,10 @@ class MusicService :
                 controllerFuture = null
                 runCatching { pauseAllPlayersAndStopSelf() }.onFailure { stopSelf() }
             }
+            // Force exit process so the app dies completely when user swipes it away from recents
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                kotlin.system.exitProcess(0)
+            }, 150)
             return
         }
         super.onTaskRemoved(rootIntent)
