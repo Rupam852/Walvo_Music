@@ -38,7 +38,7 @@ import java.util.Properties
 object CloudSettingsSyncManager {
 
     private const val NEON_JDBC_URL =
-        "jdbc:postgresql://ep-billowing-moon-azjx44np-pooler.c-3.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require&user=neondb_owner&password=npg_XYRETgsA1Bj8"
+        "jdbc:postgresql://ep-billowing-moon-azjx44np-pooler.c-3.ap-southeast-1.aws.neon.tech:5432/neondb"
 
     @Volatile
     private var tableChecked = false
@@ -52,13 +52,15 @@ object CloudSettingsSyncManager {
             val props = Properties().apply {
                 setProperty("user", "neondb_owner")
                 setProperty("password", "npg_XYRETgsA1Bj8")
+                setProperty("ssl", "true")
                 setProperty("sslmode", "require")
-                setProperty("connectTimeout", "5")
-                setProperty("socketTimeout", "5")
+                setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory")
+                setProperty("connectTimeout", "10")
+                setProperty("socketTimeout", "10")
             }
             DriverManager.getConnection(NEON_JDBC_URL, props)
         }.onFailure { e ->
-            Timber.w("[CloudSync] Failed to establish Neon PostgreSQL connection: ${e.message}")
+            Timber.w(e, "[CloudSync] Failed to establish Neon PostgreSQL connection: ${e.message}")
         }.getOrNull()
     }
 
@@ -84,12 +86,14 @@ object CloudSettingsSyncManager {
         }
     }
 
-    private fun extractUserId(cookie: String, email: String): String? {
+    private fun extractUserId(cookie: String, email: String, name: String): String? {
         return runCatching {
             val parsed = parseCookieString(cookie)
-            val sapisid = parsed["SAPISID"] ?: parsed["__Secure-3PAPISID"]
+            val sapisid = parsed["SAPISID"] ?: parsed["__Secure-3PAPISID"] ?: parsed["SSID"] ?: parsed["HSID"]
             if (!sapisid.isNullOrBlank()) return sapisid.trim()
             if (email.isNotBlank()) return email.trim().lowercase()
+            if (name.isNotBlank()) return name.trim().lowercase()
+            if (cookie.isNotBlank()) return cookie.hashCode().toString()
             null
         }.getOrNull()
     }
@@ -103,7 +107,7 @@ object CloudSettingsSyncManager {
             val email = prefs[AccountEmailKey].orEmpty()
             val name = prefs[AccountNameKey].orEmpty()
 
-            val userId = extractUserId(cookie, email) ?: return@withContext false
+            val userId = extractUserId(cookie, email, name) ?: return@withContext false
 
             val json = JSONObject().apply {
                 put("contentLanguage", prefs[ContentLanguageKey] ?: SYSTEM_DEFAULT)
@@ -161,8 +165,9 @@ object CloudSettingsSyncManager {
             val prefs = context.dataStore.data.first()
             val cookie = prefs[InnerTubeCookieKey].orEmpty()
             val email = prefs[AccountEmailKey].orEmpty()
+            val name = prefs[AccountNameKey].orEmpty()
 
-            val userId = extractUserId(cookie, email) ?: return@withContext false
+            val userId = extractUserId(cookie, email, name) ?: return@withContext false
 
             val conn = getConnection() ?: return@withContext false
             conn.use { c ->
@@ -183,7 +188,7 @@ object CloudSettingsSyncManager {
                     return@use false
                 }
 
-                val json = JSONObject(settingsJsonStr!!)
+                val json = JSONObject(settingsJsonStr)
                 context.safeDataStoreEdit { mutablePrefs ->
                     if (json.has("contentLanguage")) mutablePrefs[ContentLanguageKey] = json.getString("contentLanguage")
                     if (json.has("contentCountry")) mutablePrefs[ContentCountryKey] = json.getString("contentCountry")
