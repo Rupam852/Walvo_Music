@@ -609,7 +609,8 @@ class HomeViewModel @Inject constructor(
             var preferredLanguages = context.dataStore.get(PreferredMusicLanguagesKey, emptySet())
             if (preferredLanguages.isEmpty()) {
                 val detectedCountry = context.dataStore.get(ContentCountryKey)?.takeIf { it != SYSTEM_DEFAULT }
-                    ?: tryOrNull { java.util.Locale.getDefault().country }
+                    ?: tryOrNull { (context.getSystemService(Context.TELEPHONY_SERVICE) as? android.telephony.TelephonyManager)?.simCountryIso?.takeIf { it.isNotBlank() } }
+                    ?: tryOrNull { java.util.Locale.getDefault().country?.takeIf { it.isNotBlank() } }
                     ?: "IN"
                 preferredLanguages = getDefaultLanguagesForCountry(detectedCountry)
             }
