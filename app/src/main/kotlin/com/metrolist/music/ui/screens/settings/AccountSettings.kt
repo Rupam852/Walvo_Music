@@ -6,10 +6,15 @@
 package com.metrolist.music.ui.screens.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.metrolist.music.utils.SettingsFileBackupManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -113,6 +118,46 @@ fun AccountSettings(
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    val exportSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) {
+            scope.launch(Dispatchers.IO) {
+                val success = SettingsFileBackupManager.exportSettingsToFile(context, uri)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        if (success) R.string.backup_file_success else R.string.backup_file_failed,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    val importSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            scope.launch(Dispatchers.IO) {
+                val result = SettingsFileBackupManager.importSettingsFromFile(context, uri)
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        SettingsFileBackupManager.Result.SUCCESS -> {
+                            Toast.makeText(context, R.string.restore_file_success, Toast.LENGTH_SHORT).show()
+                        }
+                        SettingsFileBackupManager.Result.INVALID_FILE -> {
+                            Toast.makeText(context, R.string.invalid_backup_file, Toast.LENGTH_LONG).show()
+                        }
+                        SettingsFileBackupManager.Result.ERROR -> {
+                            Toast.makeText(context, R.string.restore_file_failed, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -375,42 +420,22 @@ fun AccountSettings(
                     },
                     enabled = isLoggedIn
                 ),
-                if (isLoggedIn) {
-                    Material3SettingsItem(
-                        title = { Text(stringResource(R.string.backup_app_settings)) },
-                        description = { Text(stringResource(R.string.backup_app_settings_desc)) },
-                        icon = painterResource(R.drawable.backup),
-                        onClick = {
-                            scope.launch {
-                                val success = CloudSettingsSyncManager.syncLocalSettingsToCloud(context)
-                                Toast.makeText(
-                                    context,
-                                    if (success) R.string.backup_success else R.string.sync_failed,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        enabled = isLoggedIn
-                    )
-                } else null,
-                if (isLoggedIn) {
-                    Material3SettingsItem(
-                        title = { Text(stringResource(R.string.restore_app_settings)) },
-                        description = { Text(stringResource(R.string.restore_app_settings_desc)) },
-                        icon = painterResource(R.drawable.restore),
-                        onClick = {
-                            scope.launch {
-                                val success = CloudSettingsSyncManager.restoreSettingsFromCloudIfAvailable(context)
-                                Toast.makeText(
-                                    context,
-                                    if (success) R.string.restore_success else R.string.sync_failed,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        enabled = isLoggedIn
-                    )
-                } else null
+                Material3SettingsItem(
+                    title = { Text(stringResource(R.string.backup_app_settings)) },
+                    description = { Text(stringResource(R.string.backup_app_settings_desc)) },
+                    icon = painterResource(R.drawable.backup),
+                    onClick = {
+                        exportSettingsLauncher.launch("walvo_settings_backup.json")
+                    }
+                ),
+                Material3SettingsItem(
+                    title = { Text(stringResource(R.string.restore_app_settings)) },
+                    description = { Text(stringResource(R.string.restore_app_settings_desc)) },
+                    icon = painterResource(R.drawable.restore),
+                    onClick = {
+                        importSettingsLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                    }
+                )
             ).filterNotNull(),
             useLowContrast = true
         )

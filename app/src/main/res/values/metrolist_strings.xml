@@ -1127,11 +1127,13 @@
         for this reason. Use at your own risk.\n\nWalvo Music will only extract your token;
         everything else is stored locally.</string>
     <string name="stands_with_india">This Project stands with India 🇮🇳</string>
-    <string name="backup_app_settings">Backup settings to Cloud</string>
-    <string name="backup_app_settings_desc">Save current app settings to Cloud</string>
-    <string name="restore_app_settings">Restore settings from Cloud</string>
-    <string name="restore_app_settings_desc">Fetch and apply your saved cloud settings</string>
-    <string name="backup_success">Settings backed up to Cloud successfully!</string>
-    <string name="restore_success">Settings restored from Cloud successfully!</string>
-    <string name="sync_failed">Cloud sync failed. Check your internet connection.</string>
+    <string name="backup_app_settings">Backup Settings</string>
+    <string name="backup_app_settings_desc">Save current app settings to a backup file in Downloads</string>
+    <string name="restore_app_settings">Restore Settings</string>
+    <string name="restore_app_settings_desc">Restore settings from a saved backup file</string>
+    <string name="backup_file_success">Settings backup file saved successfully!</string>
+    <string name="backup_file_failed">Failed to save backup file.</string>
+    <string name="restore_file_success">Settings restored successfully!</string>
+    <string name="restore_file_failed">Failed to restore settings file.</string>
+    <string name="invalid_backup_file">Invalid backup file! Please select a valid Walvo Settings file.</string>
 </resources>
