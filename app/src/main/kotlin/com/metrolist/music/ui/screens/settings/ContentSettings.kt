@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -368,7 +369,14 @@ fun ContentSettings(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
+                                .clickable {
+                                    tempSelected = if (isChecked) {
+                                        tempSelected - code
+                                    } else {
+                                        tempSelected + code
+                                    }
+                                }
+                                .padding(vertical = 8.dp, horizontal = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -379,13 +387,7 @@ fun ContentSettings(
                             )
                             Checkbox(
                                 checked = isChecked,
-                                onCheckedChange = { checked ->
-                                    tempSelected = if (checked) {
-                                        tempSelected + code
-                                    } else {
-                                        tempSelected - code
-                                    }
-                                }
+                                onCheckedChange = null
                             )
                         }
                     }
