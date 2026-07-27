@@ -4007,6 +4007,7 @@ class MusicService :
 
     private fun ensureForegroundChannelExists() {
         val nm = getSystemService(NotificationManager::class.java)
+        runCatching { nm?.deleteNotificationChannel("music_channel_01") }
         nm?.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_ID,
@@ -4804,7 +4805,7 @@ class MusicService :
         const val SEARCH = "search"
         const val SHUFFLE_ACTION = "__shuffle__"
 
-        const val CHANNEL_ID = "music_channel_01"
+        const val CHANNEL_ID = "music_channel_02"
         const val NOTIFICATION_ID = 888
         const val ERROR_CODE_NO_STREAM = 1000001
         const val CHUNK_LENGTH = 512 * 1024L

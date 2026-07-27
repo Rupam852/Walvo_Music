@@ -895,6 +895,7 @@ class ListenTogetherClient
                             NotificationManager.IMPORTANCE_HIGH,
                         )
                     channel.description = context.getString(R.string.listen_together_notification_channel_desc)
+                    channel.setShowBadge(false)
                     nm?.createNotificationChannel(channel)
                 }
             } catch (e: Exception) {
