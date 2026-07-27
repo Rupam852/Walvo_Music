@@ -27,6 +27,8 @@ import com.metrolist.innertube.utils.completed
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HideYoutubeShortsKey
+import com.metrolist.music.constants.LanguageCodeToName
+import com.metrolist.music.constants.PreferredMusicLanguagesKey
 import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.QuickPicks
 import com.metrolist.music.constants.QuickPicksKey
@@ -586,7 +588,39 @@ class HomeViewModel @Inject constructor(
                     )
                 }
 
-            similarRecommendations.value = (artistRecommendations + songRecommendations + albumRecommendations).shuffled()
+            val preferredLanguages = context.dataStore.get(PreferredMusicLanguagesKey, emptySet())
+            val languageRecommendations = mutableListOf<SimilarRecommendation>()
+
+            if (preferredLanguages.isNotEmpty()) {
+                preferredLanguages.forEach { code ->
+                    val langName = LanguageCodeToName[code] ?: code
+                    YouTube.search("$langName songs", filter = YouTube.SearchFilter.FILTER_SONG).onSuccess { page ->
+                        val songs = page.items
+                            .filterOutNulls()
+                            .filterExplicit(hideExplicit)
+                            .filterVideoSongs(hideVideoSongs)
+                            .take(12)
+                        if (songs.isNotEmpty()) {
+                            val dummyArtist = com.metrolist.music.db.entities.Artist(
+                                artist = com.metrolist.music.db.entities.ArtistEntity(
+                                    id = "lang_suggest_$code",
+                                    name = "$langName Suggestions",
+                                    thumbnailUrl = songs.firstOrNull()?.thumbnail
+                                ),
+                                songCount = songs.size
+                            )
+                            languageRecommendations.add(
+                                SimilarRecommendation(
+                                    title = dummyArtist,
+                                    items = songs
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            similarRecommendations.value = (languageRecommendations + artistRecommendations + songRecommendations + albumRecommendations)
             allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
                     homePage.value?.sections?.flatMap { it.items }.orEmpty()
         }
