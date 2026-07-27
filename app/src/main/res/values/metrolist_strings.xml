@@ -60,6 +60,10 @@
     <string name="preferred_music_languages_desc">Select languages to filter and personalize song suggestions</string>
     <string name="all_languages">All Languages (System Default)</string>
 
+    <!-- Cloud Sync Settings -->
+    <string name="auto_sync_app_settings">Auto sync App settings</string>
+    <string name="auto_sync_app_settings_desc">Automatically backup &amp; restore app settings with cloud account</string>
+
     <!-- Menu descriptions -->
     <string name="download_playlist_desc">Download all songs for offline playback</string>
     <string name="remove_download_playlist_desc">Remove all downloaded songs from this playlist</string>

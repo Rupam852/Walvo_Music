@@ -63,8 +63,10 @@ import com.metrolist.music.constants.AccountNameKey
 import com.metrolist.music.constants.DataSyncIdKey
 import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.UseLoginForBrowse
+import com.metrolist.music.constants.AutoSyncAppSettingsKey
 import com.metrolist.music.constants.VisitorDataKey
 import com.metrolist.music.constants.YtmSyncKey
+import com.metrolist.music.utils.CloudSettingsSyncManager
 import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.InfoLabel
 import com.metrolist.music.ui.component.Material3SettingsGroup
@@ -97,6 +99,7 @@ fun AccountSettings(
     }
     val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
     val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
+    val (autoSyncAppSettings, onAutoSyncAppSettingsChange) = rememberPreference(AutoSyncAppSettingsKey, true)
 
     val homeViewModel: HomeViewModel = hiltViewModel()
     val accountSettingsViewModel: AccountSettingsViewModel = hiltViewModel()
@@ -107,6 +110,12 @@ fun AccountSettings(
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn && autoSyncAppSettings) {
+            CloudSettingsSyncManager.restoreSettingsFromCloudIfAvailable(context)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -368,8 +377,39 @@ fun AccountSettings(
                         )
                     },
                     enabled = isLoggedIn
-                )
-            ),
+                ),
+                if (isLoggedIn) {
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.auto_sync_app_settings)) },
+                        description = { Text(stringResource(R.string.auto_sync_app_settings_desc)) },
+                        icon = painterResource(R.drawable.cloud_upload),
+                        trailingContent = {
+                            Switch(
+                                enabled = isLoggedIn,
+                                checked = autoSyncAppSettings,
+                                onCheckedChange = { checked ->
+                                    onAutoSyncAppSettingsChange(checked)
+                                    if (checked) {
+                                        scope.launch {
+                                            CloudSettingsSyncManager.syncLocalSettingsToCloud(context)
+                                        }
+                                    }
+                                },
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (autoSyncAppSettings) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        enabled = isLoggedIn
+                    )
+                } else null
+            ).filterNotNull(),
             useLowContrast = true
         )
 

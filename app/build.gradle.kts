@@ -414,6 +414,9 @@ dependencies {
     implementation(libs.ktor.client.encoding)
     implementation(libs.ktor.serialization.json)
 
+    // PostgreSQL JDBC Driver for Neon Cloud Database
+    implementation("org.postgresql:postgresql:42.7.2")
+
     // Protobuf for message serialization (lite version for Android)
     implementation(libs.protobuf.javalite)
     implementation(libs.protobuf.kotlin.lite)
