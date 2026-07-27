@@ -211,3 +211,14 @@
 -keepclasseswithmembers class com.metrolist.shazamkit.models.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+## PostgreSQL JDBC Rules
+-keep class org.postgresql.** { *; }
+-dontwarn org.postgresql.**
+-dontwarn javax.naming.**
+-dontwarn javax.security.**
+-dontwarn org.ietf.jgss.**
+-dontwarn com.sun.jna.**
+-dontwarn java.lang.management.**
+-dontwarn javax.xml.stream.**
+-dontwarn javax.xml.transform.stax.**
