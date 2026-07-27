@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/walvo_logo"
-    android:gravity="fill" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:top="14dp"
+        android:bottom="14dp"
+        android:left="14dp"
+        android:right="14dp">
+        <bitmap
+            android:src="@drawable/walvo_logo"
+            android:gravity="center" />
+    </item>
+</layer-list>

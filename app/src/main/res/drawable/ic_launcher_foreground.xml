@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/walvo_logo"
-    android:gravity="fill" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Foreground: black treble clef silhouette, centered in adaptive icon safe zone -->
+    <item
+        android:top="18dp"
+        android:bottom="18dp"
+        android:left="18dp"
+        android:right="18dp">
+        <bitmap
+            android:src="@drawable/walvo_logo_foreground"
+            android:gravity="center" />
+    </item>
+</layer-list>
