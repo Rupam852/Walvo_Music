@@ -9,7 +9,6 @@ import android.content.Context
 import com.metrolist.music.constants.AccountEmailKey
 import com.metrolist.music.constants.AccountNameKey
 import com.metrolist.music.constants.AppLanguageKey
-import com.metrolist.music.constants.AutoSyncAppSettingsKey
 import com.metrolist.music.constants.ContentCountryKey
 import com.metrolist.music.constants.ContentLanguageKey
 import com.metrolist.music.constants.DarkModeKey
@@ -95,21 +94,16 @@ object CloudSettingsSyncManager {
         }.getOrNull()
     }
 
-    suspend fun syncLocalSettingsToCloud(context: Context) = withContext(Dispatchers.IO) {
-        if (isSyncing) return@withContext
+    suspend fun syncLocalSettingsToCloud(context: Context): Boolean = withContext(Dispatchers.IO) {
+        if (isSyncing) return@withContext false
         isSyncing = true
         try {
             val prefs = context.dataStore.data.first()
-            val autoSync = prefs[AutoSyncAppSettingsKey] ?: true
-            if (!autoSync) {
-                return@withContext
-            }
-
             val cookie = prefs[InnerTubeCookieKey].orEmpty()
             val email = prefs[AccountEmailKey].orEmpty()
             val name = prefs[AccountNameKey].orEmpty()
 
-            val userId = extractUserId(cookie, email) ?: return@withContext
+            val userId = extractUserId(cookie, email) ?: return@withContext false
 
             val json = JSONObject().apply {
                 put("contentLanguage", prefs[ContentLanguageKey] ?: SYSTEM_DEFAULT)
@@ -130,8 +124,9 @@ object CloudSettingsSyncManager {
                 put("showMonthlyListeners", prefs[ShowMonthlyListenersKey] ?: true)
             }
 
-            getConnection()?.use { conn ->
-                ensureTableExists(conn)
+            val conn = getConnection() ?: return@withContext false
+            conn.use { c ->
+                ensureTableExists(c)
                 val sql = """
                     INSERT INTO user_app_settings (user_id, account_email, account_name, settings_json, updated_at)
                     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -141,7 +136,7 @@ object CloudSettingsSyncManager {
                         settings_json = EXCLUDED.settings_json,
                         updated_at = CURRENT_TIMESTAMP;
                 """.trimIndent()
-                conn.prepareStatement(sql).use { stmt ->
+                c.prepareStatement(sql).use { stmt ->
                     stmt.setString(1, userId)
                     stmt.setString(2, email)
                     stmt.setString(3, name)
@@ -149,32 +144,32 @@ object CloudSettingsSyncManager {
                     stmt.executeUpdate()
                 }
                 Timber.d("[CloudSync] Successfully backed up settings for user: $userId")
+                true
             }
         } catch (e: Throwable) {
             Timber.e(e, "[CloudSync] Throwable in syncLocalSettingsToCloud")
+            false
         } finally {
             isSyncing = false
         }
     }
 
-    suspend fun restoreSettingsFromCloudIfAvailable(context: Context) = withContext(Dispatchers.IO) {
-        if (isSyncing) return@withContext
+    suspend fun restoreSettingsFromCloudIfAvailable(context: Context): Boolean = withContext(Dispatchers.IO) {
+        if (isSyncing) return@withContext false
         isSyncing = true
         try {
             val prefs = context.dataStore.data.first()
-            val autoSync = prefs[AutoSyncAppSettingsKey] ?: true
-            if (!autoSync) return@withContext
-
             val cookie = prefs[InnerTubeCookieKey].orEmpty()
             val email = prefs[AccountEmailKey].orEmpty()
 
-            val userId = extractUserId(cookie, email) ?: return@withContext
+            val userId = extractUserId(cookie, email) ?: return@withContext false
 
-            getConnection()?.use { conn ->
-                ensureTableExists(conn)
+            val conn = getConnection() ?: return@withContext false
+            conn.use { c ->
+                ensureTableExists(c)
                 val sql = "SELECT settings_json FROM user_app_settings WHERE user_id = ?"
                 var settingsJsonStr: String? = null
-                conn.prepareStatement(sql).use { stmt ->
+                c.prepareStatement(sql).use { stmt ->
                     stmt.setString(1, userId)
                     stmt.executeQuery().use { rs ->
                         if (rs.next()) {
@@ -185,10 +180,10 @@ object CloudSettingsSyncManager {
 
                 if (settingsJsonStr.isNullOrBlank()) {
                     Timber.d("[CloudSync] No cloud backup found for user: $userId.")
-                    return@use
+                    return@use false
                 }
 
-                val json = JSONObject(settingsJsonStr)
+                val json = JSONObject(settingsJsonStr!!)
                 context.safeDataStoreEdit { mutablePrefs ->
                     if (json.has("contentLanguage")) mutablePrefs[ContentLanguageKey] = json.getString("contentLanguage")
                     if (json.has("contentCountry")) mutablePrefs[ContentCountryKey] = json.getString("contentCountry")
@@ -211,9 +206,11 @@ object CloudSettingsSyncManager {
                     if (json.has("showMonthlyListeners")) mutablePrefs[ShowMonthlyListenersKey] = json.getBoolean("showMonthlyListeners")
                 }
                 Timber.d("[CloudSync] Successfully restored settings for user: $userId")
+                true
             }
         } catch (e: Throwable) {
             Timber.e(e, "[CloudSync] Throwable in restoreSettingsFromCloudIfAvailable")
+            false
         } finally {
             isSyncing = false
         }

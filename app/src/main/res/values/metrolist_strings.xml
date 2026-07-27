@@ -1127,4 +1127,11 @@
         for this reason. Use at your own risk.\n\nWalvo Music will only extract your token;
         everything else is stored locally.</string>
     <string name="stands_with_india">This Project stands with India 🇮🇳</string>
+    <string name="backup_app_settings">Backup settings to Cloud</string>
+    <string name="backup_app_settings_desc">Save current app settings to your Neon PostgreSQL account</string>
+    <string name="restore_app_settings">Restore settings from Cloud</string>
+    <string name="restore_app_settings_desc">Fetch and apply your saved cloud settings</string>
+    <string name="backup_success">Settings backed up to Cloud successfully!</string>
+    <string name="restore_success">Settings restored from Cloud successfully!</string>
+    <string name="sync_failed">Cloud sync failed. Check your internet connection.</string>
 </resources>

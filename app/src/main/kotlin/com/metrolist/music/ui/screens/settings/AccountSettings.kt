@@ -7,7 +7,9 @@ package com.metrolist.music.ui.screens.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -111,12 +113,6 @@ fun AccountSettings(
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn && autoSyncAppSettings) {
-            CloudSettingsSyncManager.restoreSettingsFromCloudIfAvailable(context)
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -381,31 +377,36 @@ fun AccountSettings(
                 ),
                 if (isLoggedIn) {
                     Material3SettingsItem(
-                        title = { Text(stringResource(R.string.auto_sync_app_settings)) },
-                        description = { Text(stringResource(R.string.auto_sync_app_settings_desc)) },
-                        icon = painterResource(R.drawable.sync),
-                        trailingContent = {
-                            Switch(
-                                enabled = isLoggedIn,
-                                checked = autoSyncAppSettings,
-                                onCheckedChange = { checked ->
-                                    onAutoSyncAppSettingsChange(checked)
-                                    if (checked) {
-                                        scope.launch {
-                                            CloudSettingsSyncManager.syncLocalSettingsToCloud(context)
-                                        }
-                                    }
-                                },
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (autoSyncAppSettings) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize)
-                                    )
-                                }
-                            )
+                        title = { Text(stringResource(R.string.backup_app_settings)) },
+                        description = { Text(stringResource(R.string.backup_app_settings_desc)) },
+                        icon = painterResource(R.drawable.backup),
+                        onClick = {
+                            scope.launch {
+                                val success = CloudSettingsSyncManager.syncLocalSettingsToCloud(context)
+                                Toast.makeText(
+                                    context,
+                                    if (success) R.string.backup_success else R.string.sync_failed,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        enabled = isLoggedIn
+                    )
+                } else null,
+                if (isLoggedIn) {
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.restore_app_settings)) },
+                        description = { Text(stringResource(R.string.restore_app_settings_desc)) },
+                        icon = painterResource(R.drawable.restore),
+                        onClick = {
+                            scope.launch {
+                                val success = CloudSettingsSyncManager.restoreSettingsFromCloudIfAvailable(context)
+                                Toast.makeText(
+                                    context,
+                                    if (success) R.string.restore_success else R.string.sync_failed,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         },
                         enabled = isLoggedIn
                     )
