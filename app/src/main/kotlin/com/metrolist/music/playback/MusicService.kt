@@ -4128,8 +4128,9 @@ class MusicService :
     override fun onTaskRemoved(rootIntent: Intent?) {
         if (dataStore.get(StopMusicOnTaskClearKey, true)) {
             if (!::player.isInitialized) {
+                // Player not ready yet — stopSelf() triggers onDestroy() which handles cleanup.
+                // No exitProcess here; onDestroy() is guaranteed to run after stopSelf().
                 stopSelf()
-                kotlin.system.exitProcess(0)
                 return
             }
             // Remote playback (Cast) is independent of the local ExoPlayer; ending the session
@@ -4149,10 +4150,22 @@ class MusicService :
                 controllerFuture = null
                 runCatching { pauseAllPlayersAndStopSelf() }.onFailure { stopSelf() }
             }
-            // Force exit process so the app dies completely when user swipes it away from recents
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                kotlin.system.exitProcess(0)
-            }, 150)
+            // Wait for onDestroy() to complete (saveQueueToDisk + player.release + scope.cancel)
+            // before forcefully exiting the process. This prevents a corrupt persistent-queue
+            // file that would crash the app on the next launch.
+            // A 2-second safety cap ensures we never hang if onDestroy stalls.
+            val pendingShutdown = shutdownDeferred
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                    try {
+                        kotlinx.coroutines.withTimeout(2_000) { pendingShutdown.await() }
+                    } catch (_: Exception) {
+                        Timber.tag(TAG).w("onTaskRemoved: shutdown timeout — force exiting")
+                    } finally {
+                        kotlin.system.exitProcess(0)
+                    }
+                }
+            }
             return
         }
         super.onTaskRemoved(rootIntent)
