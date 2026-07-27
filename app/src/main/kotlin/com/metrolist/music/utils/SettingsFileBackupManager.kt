@@ -50,15 +50,20 @@ object SettingsFileBackupManager {
     )
 
     private val KNOWN_FLOAT_KEYS = setOf(
-        "density_scale_factor", "custom_density_scale_value", "crossfadeDurationFloat"
+        "density_scale_factor", "custom_density_scale_value", "crossfadeDurationFloat",
+        "scrobbleDelayPercent", "historyDuration", "lyricsTextSize", "lyricsLineSpacing",
+        "playerVolume", "sleepTimerDefault", "swipeSensitivity"
     )
 
     private val KNOWN_INT_KEYS = setOf(
-        "selectedThemeColor", "alarmHour", "alarmMinute", "maxImageCacheSize", "maxSongCacheSize"
+        "selectedThemeColor", "alarmHour", "alarmMinute", "maxImageCacheSize", "maxSongCacheSize",
+        "scrobbleMinSongDuration", "scrobbleDelaySeconds", "repeatMode"
     )
 
     private val KNOWN_LONG_KEYS = setOf(
-        "alarmNextTriggerAt", "lastUpdateCheckTime"
+        "alarmNextTriggerAt", "lastUpdateCheckTime", "listenTogetherSessionTimestamp",
+        "last_like_song_sync", "last_library_song_sync", "last_album_sync", "last_artist_sync",
+        "last_playlist_sync", "last_full_sync", "last_weekly_most_playlist_sync", "last_monthly_most_playlist_sync"
     )
 
     private val KNOWN_SET_KEYS = setOf(
@@ -151,6 +156,14 @@ object SettingsFileBackupManager {
 
                 val value = settingsObject.get(keyName)
                 if (value == JSONObject.NULL) continue
+
+                // Purge any legacy/corrupted type variants of keyName before setting new type
+                mutablePrefs.remove(booleanPreferencesKey(keyName))
+                mutablePrefs.remove(floatPreferencesKey(keyName))
+                mutablePrefs.remove(intPreferencesKey(keyName))
+                mutablePrefs.remove(longPreferencesKey(keyName))
+                mutablePrefs.remove(stringPreferencesKey(keyName))
+                mutablePrefs.remove(stringSetPreferencesKey(keyName))
 
                 when {
                     keyName in KNOWN_BOOLEAN_KEYS || value is Boolean -> {

@@ -69,7 +69,11 @@ suspend fun Context.safeDataStoreEdit(
 
 operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? =
     runBlocking(Dispatchers.IO) {
-        data.first()[key]
+        try {
+            data.first()[key]
+        } catch (_: ClassCastException) {
+            null
+        }
     }
 
 fun <T> DataStore<Preferences>.get(
@@ -77,8 +81,28 @@ fun <T> DataStore<Preferences>.get(
     defaultValue: T,
 ): T =
     runBlocking(Dispatchers.IO) {
-        data.first()[key] ?: defaultValue
+        try {
+            data.first()[key] ?: defaultValue
+        } catch (_: ClassCastException) {
+            defaultValue
+        }
     }
+
+fun <T> Preferences.getSafe(key: Preferences.Key<T>, defaultValue: T): T {
+    return try {
+        this[key] ?: defaultValue
+    } catch (_: ClassCastException) {
+        defaultValue
+    }
+}
+
+fun <T> Preferences.getSafe(key: Preferences.Key<T>): T? {
+    return try {
+        this[key]
+    } catch (_: ClassCastException) {
+        null
+    }
+}
 
 fun <T> preference(
     context: Context,

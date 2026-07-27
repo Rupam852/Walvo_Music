@@ -207,6 +207,7 @@ import com.metrolist.music.playback.queues.filterVideoSongs
 import com.metrolist.music.constants.LoudnessLevel
 import com.metrolist.music.constants.LoudnessLevelKey
 import com.metrolist.music.utils.CoilBitmapLoader
+import com.metrolist.music.utils.getSafe
 import com.metrolist.music.utils.NetworkConnectivityObserver
 import com.metrolist.music.utils.ScrobbleManager
 import com.metrolist.music.utils.SyncUtils
@@ -706,10 +707,10 @@ class MusicService :
                     ),
                 ).setBitmapLoader(CoilBitmapLoader(this, scope))
                 .build()
-        player.repeatMode = startupPrefs!![RepeatModeKey] ?: REPEAT_MODE_OFF
+        player.repeatMode = startupPrefs!!.getSafe(RepeatModeKey, REPEAT_MODE_OFF)
 
-        if (startupPrefs!![RememberShuffleAndRepeatKey] ?: true) {
-            player.shuffleModeEnabled = startupPrefs!![ShuffleModeKey] ?: false
+        if (startupPrefs!!.getSafe(RememberShuffleAndRepeatKey, true)) {
+            player.shuffleModeEnabled = startupPrefs!!.getSafe(ShuffleModeKey, false)
         }
 
         // Keep a connected controller so that notification works
@@ -737,11 +738,11 @@ class MusicService :
 
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
 
-        audioQuality = startupPrefs!![AudioQualityKey]?.let { value ->
+        audioQuality = startupPrefs!!.getSafe(AudioQualityKey)?.let { value ->
             if (value == "VERY_HIGH") com.metrolist.music.constants.AudioQuality.HIGH
             else com.metrolist.music.constants.AudioQuality.entries.find { it.name == value }
         } ?: com.metrolist.music.constants.AudioQuality.AUTO
-        playerVolume = MutableStateFlow((startupPrefs!![PlayerVolumeKey] ?: 1f).coerceIn(0f, 1f))
+        playerVolume = MutableStateFlow(startupPrefs!!.getSafe(PlayerVolumeKey, 1f).coerceIn(0f, 1f))
 
         initializeCast()
 
@@ -1304,10 +1305,10 @@ class MusicService :
 
         // Set initial state — use pre-read prefs when available, otherwise fall back to DataStore
         val useAudioTrackPlaybackParams = if (prefs != null) {
-            val skipSilence = prefs[SkipSilenceKey] ?: false
-            val instantSkip = prefs[SkipSilenceInstantKey] ?: false
+            val skipSilence = prefs.getSafe(SkipSilenceKey, false)
+            val instantSkip = prefs.getSafe(SkipSilenceInstantKey, false)
             silenceProcessor.instantModeEnabled = skipSilence && instantSkip
-            prefs[AudioTrackPlaybackParamsKey] ?: true
+            prefs.getSafe(AudioTrackPlaybackParamsKey, true)
         } else {
             runBlocking {
                 val skipSilence = dataStore.get(SkipSilenceKey, false)
@@ -1349,10 +1350,10 @@ class MusicService :
         playerSilenceProcessors[player] = silenceProcessor
 
         if (prefs != null) {
-            val offload = prefs[AudioOffload] ?: false
-            val crossfade = prefs[CrossfadeEnabledKey] ?: false
+            val offload = prefs.getSafe(AudioOffload, false)
+            val crossfade = prefs.getSafe(CrossfadeEnabledKey, false)
             player.setOffloadEnabled(if (crossfade) false else offload)
-            player.skipSilenceEnabled = prefs[SkipSilenceKey] ?: false
+            player.skipSilenceEnabled = prefs.getSafe(SkipSilenceKey, false)
         } else {
             player.apply {
                 runBlocking {
@@ -2263,8 +2264,8 @@ class MusicService :
 
     private fun seedLoudnessCacheFromPrefs() {
         val prefs = startupPrefs!!
-        normalizationEnabledCached = prefs[AudioNormalizationKey] ?: true
-        loudnessLevelCached = prefs[LoudnessLevelKey].toEnum(LoudnessLevel.BALANCED)
+        normalizationEnabledCached = prefs.getSafe(AudioNormalizationKey, true)
+        loudnessLevelCached = prefs.getSafe(LoudnessLevelKey).toEnum(LoudnessLevel.BALANCED)
 
         Timber.tag(TAG).d(
             "Seeded loudness cache: normalization=$normalizationEnabledCached, level=$loudnessLevelCached"
