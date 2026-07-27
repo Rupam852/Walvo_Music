@@ -109,7 +109,7 @@ fun ContentSettings(
     val (appLanguage, onAppLanguageChange) = rememberPreference(key = AppLanguageKey, defaultValue = SYSTEM_DEFAULT)
 
     val (contentLanguage, onContentLanguageChange) = rememberPreference(key = ContentLanguageKey, defaultValue = "system")
-    val (preferredMusicLanguages, onPreferredMusicLanguagesChange) = rememberPreference(key = PreferredMusicLanguagesKey, defaultValue = emptySet())
+    val (preferredMusicLanguages, onPreferredMusicLanguagesChange) = rememberPreference<Set<String>>(key = PreferredMusicLanguagesKey, defaultValue = emptySet())
     val (contentCountry, onContentCountryChange) = rememberPreference(key = ContentCountryKey, defaultValue = "system")
     val (hideExplicit, onHideExplicitChange) = rememberPreference(key = HideExplicitKey, defaultValue = false)
     val (hideVideoSongs, onHideVideoSongsChange) = rememberPreference(key = HideVideoSongsKey, defaultValue = false)
@@ -316,13 +316,40 @@ fun ContentSettings(
         )
     }
 
+    val regionLanguagesMap = remember {
+        mapOf(
+            "IN" to listOf("hi", "en", "pa", "hr", "bho", "bn", "mr", "gu", "ta", "te", "kn", "ml", "ur", "or", "ne"),
+            "US" to listOf("en", "es"),
+            "GB" to listOf("en"),
+            "CA" to listOf("en", "fr"),
+            "AU" to listOf("en"),
+            "DE" to listOf("de", "en"),
+            "FR" to listOf("fr", "en"),
+            "ES" to listOf("es", "en"),
+            "JP" to listOf("ja", "en"),
+            "KR" to listOf("ko", "en"),
+            "BR" to listOf("pt", "en"),
+            "MX" to listOf("es", "en"),
+            "RU" to listOf("ru", "en"),
+            "CN" to listOf("zh", "en"),
+            "TW" to listOf("zh-TW", "en"),
+            "PK" to listOf("ur", "pa", "en"),
+            "BD" to listOf("bn", "en"),
+            "NP" to listOf("ne", "en"),
+            "LK" to listOf("ta", "en"),
+        )
+    }
+
     var showPreferredMusicLanguagesDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
     if (showPreferredMusicLanguagesDialog) {
         var tempSelected by remember {
-            mutableStateOf(preferredMusicLanguages)
+            mutableStateOf<Set<String>>(preferredMusicLanguages)
+        }
+        val availableCodes = remember(contentCountry) {
+            regionLanguagesMap[contentCountry] ?: LanguageCodeToName.keys.toList()
         }
         AlertDialog(
             onDismissRequest = { showPreferredMusicLanguagesDialog = false },
@@ -335,7 +362,8 @@ fun ContentSettings(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    LanguageCodeToName.forEach { (code, name) ->
+                    availableCodes.forEach { code ->
+                        val name = LanguageCodeToName[code] ?: code
                         val isChecked = tempSelected.contains(code)
                         Row(
                             modifier = Modifier
