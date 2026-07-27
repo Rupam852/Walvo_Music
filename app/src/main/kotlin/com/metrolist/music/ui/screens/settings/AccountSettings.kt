@@ -10,6 +10,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.utils.SettingsFileBackupManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -117,6 +118,7 @@ fun AccountSettings(
     var showToken by remember { mutableStateOf(false) }
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showSettingsBackupDialog by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     val exportSettingsLauncher = rememberLauncherForActivityResult(
@@ -425,20 +427,49 @@ fun AccountSettings(
                     description = { Text(stringResource(R.string.backup_app_settings_desc)) },
                     icon = painterResource(R.drawable.backup),
                     onClick = {
-                        exportSettingsLauncher.launch("walvo_settings_backup.json")
-                    }
-                ),
-                Material3SettingsItem(
-                    title = { Text(stringResource(R.string.restore_app_settings)) },
-                    description = { Text(stringResource(R.string.restore_app_settings_desc)) },
-                    icon = painterResource(R.drawable.restore),
-                    onClick = {
-                        importSettingsLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                        showSettingsBackupDialog = true
                     }
                 )
             ).filterNotNull(),
             useLowContrast = true
         )
+
+        if (showSettingsBackupDialog) {
+            DefaultDialog(
+                onDismiss = { showSettingsBackupDialog = false },
+                title = { Text(stringResource(R.string.backup_app_settings)) },
+                buttons = {
+                    TextButton(
+                        onClick = { showSettingsBackupDialog = false }
+                    ) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                }
+            ) {
+                Material3SettingsGroup(
+                    items = listOf(
+                        Material3SettingsItem(
+                            title = { Text(stringResource(R.string.backup_app_settings)) },
+                            description = { Text(stringResource(R.string.backup_app_settings_desc)) },
+                            icon = painterResource(R.drawable.backup),
+                            onClick = {
+                                showSettingsBackupDialog = false
+                                exportSettingsLauncher.launch("walvo_settings_backup.json")
+                            }
+                        ),
+                        Material3SettingsItem(
+                            title = { Text(stringResource(R.string.restore_app_settings)) },
+                            description = { Text(stringResource(R.string.restore_app_settings_desc)) },
+                            icon = painterResource(R.drawable.restore),
+                            onClick = {
+                                showSettingsBackupDialog = false
+                                importSettingsLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                            }
+                        )
+                    )
+                )
+            }
+        }
 
         Spacer(Modifier.height(12.dp))
 
