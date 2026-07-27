@@ -56,8 +56,10 @@ import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
 import com.metrolist.music.constants.AppLanguageKey
+import androidx.compose.material3.Checkbox
 import com.metrolist.music.constants.ContentCountryKey
 import com.metrolist.music.constants.ContentLanguageKey
+import com.metrolist.music.constants.PreferredMusicLanguagesKey
 import com.metrolist.music.constants.CountryCodeToName
 import com.metrolist.music.constants.EnableBetterLyricsKey
 import com.metrolist.music.constants.EnableKugouKey
@@ -107,6 +109,7 @@ fun ContentSettings(
     val (appLanguage, onAppLanguageChange) = rememberPreference(key = AppLanguageKey, defaultValue = SYSTEM_DEFAULT)
 
     val (contentLanguage, onContentLanguageChange) = rememberPreference(key = ContentLanguageKey, defaultValue = "system")
+    val (preferredMusicLanguages, onPreferredMusicLanguagesChange) = rememberPreference(key = PreferredMusicLanguagesKey, defaultValue = emptySet())
     val (contentCountry, onContentCountryChange) = rememberPreference(key = ContentCountryKey, defaultValue = "system")
     val (hideExplicit, onHideExplicitChange) = rememberPreference(key = HideExplicitKey, defaultValue = false)
     val (hideVideoSongs, onHideVideoSongsChange) = rememberPreference(key = HideVideoSongsKey, defaultValue = false)
@@ -309,6 +312,73 @@ fun ContentSettings(
             values = (listOf(SYSTEM_DEFAULT) + LanguageCodeToName.keys.toList()),
             valueText = {
                 LanguageCodeToName.getOrElse(it) { stringResource(R.string.system_default) }
+            }
+        )
+    }
+
+    var showPreferredMusicLanguagesDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showPreferredMusicLanguagesDialog) {
+        var tempSelected by remember {
+            mutableStateOf(preferredMusicLanguages)
+        }
+        AlertDialog(
+            onDismissRequest = { showPreferredMusicLanguagesDialog = false },
+            title = { Text(stringResource(R.string.preferred_music_languages)) },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    LanguageCodeToName.forEach { (code, name) ->
+                        val isChecked = tempSelected.contains(code)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Checkbox(
+                                checked = isChecked,
+                                onCheckedChange = { checked ->
+                                    tempSelected = if (checked) {
+                                        tempSelected + code
+                                    } else {
+                                        tempSelected - code
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onPreferredMusicLanguagesChange(tempSelected)
+                        showPreferredMusicLanguagesDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showPreferredMusicLanguagesDialog = false }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
             }
         )
     }
@@ -677,6 +747,20 @@ fun ContentSettings(
         Material3SettingsGroup(
             title = stringResource(R.string.general),
             items = listOf(
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.queue_music),
+                    title = { Text(stringResource(R.string.preferred_music_languages)) },
+                    description = {
+                        Text(
+                            if (preferredMusicLanguages.isEmpty()) {
+                                stringResource(R.string.all_languages)
+                            } else {
+                                preferredMusicLanguages.mapNotNull { LanguageCodeToName[it] }.joinToString(", ")
+                            }
+                        )
+                    },
+                    onClick = { showPreferredMusicLanguagesDialog = true }
+                ),
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.language),
                     title = { Text(stringResource(R.string.content_language)) },
