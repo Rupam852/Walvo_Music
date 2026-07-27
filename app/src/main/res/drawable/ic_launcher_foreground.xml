@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Foreground: black treble clef silhouette -->
-    <!-- 28% padding is baked into walvo_logo_foreground.png -->
-    <!-- fill gravity scales PNG to fit the 108dp foreground container exactly -->
-    <item>
+    <!-- Adaptive Icon Foreground Layer (108dp x 108dp total canvas) -->
+    <!-- Using 16dp inset ensures the logo stays comfortably inside the 66dp Safe Zone -->
+    <item
+        android:top="16dp"
+        android:bottom="16dp"
+        android:left="16dp"
+        android:right="16dp">
         <bitmap
             android:src="@drawable/walvo_logo_foreground"
-            android:gravity="fill" />
+            android:gravity="center" />
     </item>
 </layer-list>

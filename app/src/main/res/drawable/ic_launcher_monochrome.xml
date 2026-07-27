@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Monochrome layer: system will tint this with theme color for themed icons (Android 13+) -->
     <item
-        android:top="18dp"
-        android:bottom="18dp"
-        android:left="18dp"
-        android:right="18dp">
+        android:top="16dp"
+        android:bottom="16dp"
+        android:left="16dp"
+        android:right="16dp">
         <bitmap
             android:src="@drawable/walvo_logo_foreground"
             android:gravity="center" />

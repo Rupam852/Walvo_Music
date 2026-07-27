@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Foreground: black treble clef silhouette -->
-    <!-- 28% padding is baked into walvo_logo_foreground.png -->
-    <!-- fill gravity scales PNG to fit the 108dp foreground container exactly -->
-    <item>
+    <item
+        android:top="16dp"
+        android:bottom="16dp"
+        android:left="16dp"
+        android:right="16dp">
         <bitmap
             android:src="@drawable/walvo_logo_foreground"
-            android:gravity="fill" />
+            android:gravity="center" />
     </item>
 </layer-list>
