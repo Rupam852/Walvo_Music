@@ -24,11 +24,14 @@ import com.metrolist.innertube.models.filterYoutubeShorts
 import com.metrolist.innertube.pages.ExplorePage
 import com.metrolist.innertube.pages.HomePage
 import com.metrolist.innertube.utils.completed
+import com.metrolist.music.constants.ContentCountryKey
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HideYoutubeShortsKey
 import com.metrolist.music.constants.LanguageCodeToName
 import com.metrolist.music.constants.PreferredMusicLanguagesKey
+import com.metrolist.music.constants.SYSTEM_DEFAULT
+import com.metrolist.music.extensions.tryOrNull
 import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.QuickPicks
 import com.metrolist.music.constants.QuickPicksKey
@@ -86,6 +89,21 @@ class HomeViewModel @Inject constructor(
     val wrappedManager: WrappedManager,
     private val wrappedAudioService: WrappedAudioService,
 ) : ViewModel() {
+    private fun getDefaultLanguagesForCountry(countryCode: String): Set<String> {
+        return when (countryCode.uppercase()) {
+            "IN" -> setOf("hi", "pa", "en") // India: Hindi, Punjabi, English
+            "PK" -> setOf("ur", "pa", "en") // Pakistan: Urdu, Punjabi, English
+            "BD" -> setOf("bn", "en")       // Bangladesh: Bengali, English
+            "NP" -> setOf("ne", "hi", "en") // Nepal: Nepali, Hindi, English
+            "US", "CA" -> setOf("en", "es") // USA / Canada: English, Spanish
+            "GB", "AU", "NZ" -> setOf("en") // UK / Australia / NZ: English
+            "JP" -> setOf("ja")             // Japan: Japanese
+            "KR" -> setOf("ko")             // Korea: Korean
+            "ES", "MX", "AR", "CL", "CO" -> setOf("es") // Spanish speaking countries
+            else -> setOf("hi", "pa", "en") // Default fallback
+        }
+    }
+
     val isRefreshing = MutableStateFlow(false)
     val isLoading = MutableStateFlow(false)
     val isRandomizing = MutableStateFlow(false)
@@ -588,7 +606,13 @@ class HomeViewModel @Inject constructor(
                     )
                 }
 
-            val preferredLanguages = context.dataStore.get(PreferredMusicLanguagesKey, emptySet())
+            var preferredLanguages = context.dataStore.get(PreferredMusicLanguagesKey, emptySet())
+            if (preferredLanguages.isEmpty()) {
+                val detectedCountry = context.dataStore.get(ContentCountryKey)?.takeIf { it != SYSTEM_DEFAULT }
+                    ?: tryOrNull { java.util.Locale.getDefault().country }
+                    ?: "IN"
+                preferredLanguages = getDefaultLanguagesForCountry(detectedCountry)
+            }
             val languageRecommendations = mutableListOf<SimilarRecommendation>()
 
             if (preferredLanguages.isNotEmpty()) {
