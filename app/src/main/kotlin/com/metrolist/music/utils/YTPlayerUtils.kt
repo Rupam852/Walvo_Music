@@ -71,9 +71,13 @@ object YTPlayerUtils {
     private val MAIN_CLIENT: YouTubeClient = WEB_REMIX
     private val fallbackStrategy = ContentAwareFallbackStrategy()
 
-    /** Client names disabled by the user in Settings → Stream sources. Updated reactively by MusicService. */
+        /** Client names disabled by the user in Settings → Stream sources. Updated reactively by MusicService. */
     @Volatile
     var disabledStreamClients: Set<String> = emptySet()
+
+    /** Lossless Audio toggle setting (FLAC 1411kbps). Updated reactively by MusicService. */
+    @Volatile
+    var isLosslessEnabled: Boolean = false
 
     // A stable video id used only to warm the local BotGuard token generator; the token is
     // discarded. PoToken generation is a local WebView computation (no YouTube /player call), so
@@ -178,6 +182,31 @@ object YTPlayerUtils {
         var streamUrl: String? = null
         var streamExpiresInSeconds: Int? = null
         var streamPlayerResponse: PlayerResponse? = null
+
+        // Try Lossless FLAC stream resolution if Lossless Mode is enabled in settings
+        if (isLosslessEnabled) {
+            val titleToSearch = videoDetails?.title
+            val artistToSearch = videoDetails?.author
+            if (!titleToSearch.isNullOrBlank()) {
+                val losslessResult = LosslessAudioResolver.resolveLosslessStream(
+                    cacheKey = videoId,
+                    title = titleToSearch,
+                    artist = artistToSearch
+                )
+                if (losslessResult != null) {
+                    Timber.tag(TAG).d("Playing in Lossless FLAC mode (${losslessResult.qualityLabel}) for videoId: $videoId")
+                    return@runCatching PlaybackData(
+                        audioConfig = audioConfig,
+                        videoDetails = videoDetails,
+                        playbackTracking = playbackTracking,
+                        format = losslessResult.format,
+                        streamUrl = losslessResult.streamUrl,
+                        streamExpiresInSeconds = 21600,
+                        streamClient = "LOSSLESS",
+                    )
+                }
+            }
+        }
 
         // Check current status
         val currentStatus = mainPlayerResponse?.playabilityStatus?.status

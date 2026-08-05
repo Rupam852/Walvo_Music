@@ -1121,6 +1121,8 @@
     <string name="stream_source_android_creator">ANDROID_CREATOR</string>
     <string name="stream_source_android_creator_desc">Android creator client. Off by default; needs
         DroidGuard.</string>
+    <string name="lossless_audio">Lossless Audio (FLAC 1411 kbps)</string>
+    <string name="lossless_audio_desc">Stream high-fidelity 1411 kbps Lossless FLAC audio from public Hi-Res sources when available.</string>
     <string name="discord_information">Walvo Music uses the KizzyRPC library to set your Discord
         account status. This involves using a Discord Gateway connection, which may be considered a
         violation of Discord TOS. However, there are no known cases of user accounts being suspended

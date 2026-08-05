@@ -38,6 +38,7 @@ import com.metrolist.music.constants.AccountEmailKey
 import com.metrolist.music.constants.AccountNameKey
 import com.metrolist.music.constants.DataSyncIdKey
 import com.metrolist.music.constants.InnerTubeCookieKey
+import com.metrolist.music.constants.StreamSourceWebRemixKey
 import com.metrolist.music.constants.VisitorDataKey
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.utils.backToMain
@@ -109,6 +110,7 @@ fun LoginScreen(navController: NavController) {
                             settings[AccountNameKey] = info.name
                             settings[AccountEmailKey] = info.email.orEmpty()
                             settings[AccountChannelHandleKey] = info.channelHandle.orEmpty()
+                            settings[StreamSourceWebRemixKey] = false
                         }
                     }
 

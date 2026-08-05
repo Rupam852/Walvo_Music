@@ -339,6 +339,7 @@ class App :
                 settings.remove(AccountNameKey)
                 settings.remove(AccountEmailKey)
                 settings.remove(AccountChannelHandleKey)
+                settings[StreamSourceWebRemixKey] = true
             }
             if (!cleared) {
                 Timber.e("forgetAccount: Failed to clear DataStore preferences — proceeding with in-memory cleanup only")
