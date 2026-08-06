@@ -1138,4 +1138,7 @@
     <string name="restore_file_success">Settings restored successfully!</string>
     <string name="restore_file_failed">Failed to restore settings file.</string>
     <string name="invalid_backup_file">Invalid backup file! Please select a valid Walvo Settings file.</string>
+    <string name="lossless_status_active">Active (FLAC 1411 kbps)</string>
+    <string name="lossless_status_not_supported">Not supported for this song</string>
+    <string name="lossless_status_disabled">Disabled in settings</string>
 </resources>

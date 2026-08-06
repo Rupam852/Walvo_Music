@@ -44,6 +44,7 @@ import com.metrolist.innertube.models.MediaInfo
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
+import com.metrolist.music.constants.LosslessAudioKey
 import com.metrolist.music.constants.LoudnessLevel
 import com.metrolist.music.constants.LoudnessLevelKey
 import com.metrolist.music.db.entities.FormatEntity
@@ -55,6 +56,7 @@ import com.metrolist.music.ui.component.Material3SettingsItem
 import com.metrolist.music.ui.component.shimmer.ShimmerHost
 import com.metrolist.music.ui.component.shimmer.TextPlaceholder
 import com.metrolist.music.utils.rememberEnumPreference
+import com.metrolist.music.utils.rememberPreference
 import androidx.compose.ui.platform.LocalLocale
 
 @Composable
@@ -84,6 +86,7 @@ fun ShowMediaInfo(videoId: String) {
 
     val playerConnection = LocalPlayerConnection.current
     val currentStreamClient by playerConnection?.currentStreamClient?.collectAsState() ?: remember { mutableStateOf(null) }
+    val isLosslessEnabled by rememberPreference(LosslessAudioKey, defaultValue = false)
     val context = LocalContext.current
 
     val loudnessLevel by rememberEnumPreference(
@@ -149,7 +152,8 @@ fun ShowMediaInfo(videoId: String) {
                         R.drawable.volume_up,
                         R.drawable.volume_up,
                         R.drawable.volume_mute,
-                        R.drawable.content_copy
+                        R.drawable.content_copy,
+                        R.drawable.music_note
                     )
 
                     val notApplicable = stringResource(R.string.not_applicable)
@@ -161,6 +165,12 @@ fun ShowMediaInfo(videoId: String) {
 
                     val measuredLufs: Double? = currentFormat?.perceptualLoudnessDb ?: currentFormat?.loudnessDb?.let { it + LoudnessLevel.AGGRESSIVE.targetLufs }
 
+                    val losslessStatus = when {
+                        currentStreamClient == "LOSSLESS" -> stringResource(R.string.lossless_status_active)
+                        isLosslessEnabled -> stringResource(R.string.lossless_status_not_supported)
+                        else -> stringResource(R.string.lossless_status_disabled)
+                    }
+
                     val extendedList = if (currentFormat != null) {
                         listOf(
                             stringResource(R.string.views) to info?.viewCount?.let(::numberFormatter).orEmpty(),
@@ -168,6 +178,7 @@ fun ShowMediaInfo(videoId: String) {
                             stringResource(R.string.dislikes) to info?.dislike?.let(::numberFormatter).orEmpty(),
                             "Itag" to currentFormat?.itag?.toString(),
                             stringResource(R.string.stream_client) to currentStreamClient,
+                            stringResource(R.string.lossless_audio) to losslessStatus,
                             stringResource(R.string.format_player_hash) to
                                     (if (isWebStream) playerHash else notApplicable),
                             stringResource(R.string.format_cipher_support_added) to
@@ -215,7 +226,7 @@ fun ShowMediaInfo(videoId: String) {
                         cardsExtendedList += Material3SettingsItem(
                             title = { Text(label) },
                             description = { Text(displayText) },
-                            icon = painterResource(iconsList[index]),
+                            icon = painterResource(iconsList.getOrElse(index) { R.drawable.music_note }),
                             onClick = {
                                 cm.setPrimaryClip(ClipData.newPlainText("text", displayText))
                                 Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
