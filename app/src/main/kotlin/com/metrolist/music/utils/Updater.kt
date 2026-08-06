@@ -39,7 +39,7 @@ object Updater {
     private var cachedReleaseInfo: ReleaseInfo? = null
     private var cachedAllReleases: List<ReleaseInfo> = emptyList()
     
-    private const val CHECK_INTERVAL_MILLIS = 2 * 60 * 60 * 1000L // 2 hours
+    private const val CHECK_INTERVAL_MILLIS = 12 * 60 * 60 * 1000L // 12 hours
     private const val GITHUB_API_BASE = "https://api.github.com/repos/Rupam852/Walvo_Music"
 
     /**
@@ -199,7 +199,106 @@ object Updater {
      * Get the download URL for the correct app variant
      */
     fun getDownloadUrlForCurrentVariant(releaseInfo: ReleaseInfo): String {
-        return releaseInfo.htmlUrl.ifEmpty { "https://github.com/Rupam852/Walvo_Music/releases/latest" }
+        val (arch, variant) = getCurrentAppVariant()
+        val matchingAsset = releaseInfo.assets.find { 
+            (it.architecture == arch || it.architecture == "universal") && it.variant == variant 
+        } ?: releaseInfo.assets.firstOrNull()
+        return matchingAsset?.downloadUrl ?: releaseInfo.htmlUrl.ifEmpty { "https://github.com/Rupam852/Walvo_Music/releases/latest" }
+    }
+
+    /**
+     * Download release APK directly and launch Android PackageInstaller Intent
+     */
+    suspend fun downloadAndInstallApk(
+        context: android.content.Context,
+        downloadUrl: String,
+        onProgress: (Float) -> Unit
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            autoCleanupOldUpdates(context)
+            val updatesDir = java.io.File(context.cacheDir, "updates")
+            if (!updatesDir.exists()) updatesDir.mkdirs()
+
+            val apkFile = java.io.File(updatesDir, "walvo_music_update.apk")
+            if (apkFile.exists()) apkFile.delete()
+
+            val url = java.net.URL(downloadUrl)
+            val connection = url.openConnection() as java.net.HttpURLConnection
+            connection.instanceFollowRedirects = true
+            connection.connectTimeout = 15000
+            connection.readTimeout = 15000
+            connection.connect()
+
+            val fileLength = connection.contentLength
+            val input = connection.inputStream
+            val output = java.io.FileOutputStream(apkFile)
+
+            val buffer = ByteArray(4096)
+            var total: Long = 0
+            var count: Int
+
+            while (input.read(buffer).also { count = it } != -1) {
+                total += count
+                if (fileLength > 0) {
+                    onProgress(total.toFloat() / fileLength)
+                }
+                output.write(buffer, 0, count)
+            }
+
+            output.flush()
+            output.close()
+            input.close()
+
+            // Check unknown sources permission on Android 8.0+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && !context.packageManager.canRequestPackageInstalls()) {
+                val permissionIntent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                    setData(android.net.Uri.parse("package:${context.packageName}"))
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(permissionIntent)
+                return@runCatching
+            }
+
+            // Launch Android Package Installer
+            val apkUri = androidx.core.content.FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.FileProvider",
+                apkFile
+            )
+
+            val installIntent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(installIntent)
+        }
+    }
+
+    /**
+     * Manually clear downloaded update APK files
+     */
+    fun clearDownloadedUpdates(context: android.content.Context): Boolean {
+        val updatesDir = java.io.File(context.cacheDir, "updates")
+        return if (updatesDir.exists()) {
+            updatesDir.deleteRecursively()
+        } else false
+    }
+
+    /**
+     * Automatically clean up downloaded update files older than 24 hours (1 day)
+     */
+    fun autoCleanupOldUpdates(context: android.content.Context) {
+        val updatesDir = java.io.File(context.cacheDir, "updates")
+        if (updatesDir.exists()) {
+            val now = System.currentTimeMillis()
+            val oneDayMs = 24 * 60 * 60 * 1000L
+            updatesDir.listFiles()?.forEach { file ->
+                if (now - file.lastModified() > oneDayMs) {
+                    file.delete()
+                }
+            }
+        }
     }
 
     /**

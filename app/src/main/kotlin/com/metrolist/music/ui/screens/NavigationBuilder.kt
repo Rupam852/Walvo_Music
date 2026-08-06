@@ -56,6 +56,7 @@ import com.metrolist.music.ui.screens.settings.SettingsScreen
 import com.metrolist.music.ui.screens.settings.StorageSettings
 import com.metrolist.music.ui.screens.settings.StreamSourcesSettings
 import com.metrolist.music.ui.screens.settings.ThemeScreen
+import com.metrolist.music.ui.screens.settings.CheckForUpdatesScreen
 import com.metrolist.music.ui.screens.settings.UpdaterScreen
 import com.metrolist.music.ui.screens.settings.integrations.DiscordSettings
 import com.metrolist.music.ui.screens.settings.integrations.IntegrationScreen
@@ -407,6 +408,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/updater") {
         UpdaterScreen(navController)
+    }
+
+    composable("settings/updater/check") {
+        CheckForUpdatesScreen(navController)
     }
 
     composable("settings/about") {

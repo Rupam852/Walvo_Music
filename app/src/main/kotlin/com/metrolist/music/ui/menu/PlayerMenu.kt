@@ -99,6 +99,7 @@ import com.metrolist.music.ui.component.Material3MenuGroup
 import com.metrolist.music.ui.component.Material3MenuItemData
 import com.metrolist.music.ui.component.NewAction
 import com.metrolist.music.ui.component.NewActionGrid
+import com.metrolist.music.ui.component.SetRingtoneDialog
 import com.metrolist.music.ui.component.VolumeSlider
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
@@ -190,6 +191,16 @@ fun PlayerMenu(
         visible = showListenTogetherDialog,
         mediaMetadata = mediaMetadata,
         onDismiss = { showListenTogetherDialog = false },
+    )
+
+    var showSetRingtoneDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    SetRingtoneDialog(
+        visible = showSetRingtoneDialog,
+        mediaMetadata = mediaMetadata,
+        onDismiss = { showSetRingtoneDialog = false },
     )
 
     var showSelectArtistDialog by rememberSaveable {
@@ -688,6 +699,21 @@ fun PlayerMenu(
                                 onClick = {
                                     onShowDetailsDialog()
                                     onDismiss()
+                                },
+                            ),
+                        )
+                        add(
+                            Material3MenuItemData(
+                                title = { Text(text = stringResource(R.string.set_as_ringtone)) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.music_note),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                },
+                                onClick = {
+                                    showSetRingtoneDialog = true
                                 },
                             ),
                         )

@@ -157,6 +157,7 @@ import com.metrolist.music.constants.SlimNavBarHeight
 import com.metrolist.music.constants.SlimNavBarKey
 import com.metrolist.music.constants.StopMusicOnTaskClearKey
 import com.metrolist.music.constants.UpdateNotificationsEnabledKey
+import com.metrolist.music.constants.LastNotifiedVersionKey
 import com.metrolist.music.constants.UseNewMiniPlayerDesignKey
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.SearchHistory
@@ -199,6 +200,7 @@ import com.metrolist.music.utils.get
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.utils.reportException
+import com.metrolist.music.utils.safeDataStoreEdit
 import com.metrolist.music.utils.setAppLocale
 import com.metrolist.music.viewmodels.HomeViewModel
 import com.metrolist.music.widget.PlaylistWidgetReceiver
@@ -209,6 +211,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -475,14 +478,15 @@ class MainActivity : ComponentActivity() {
                     withContext(Dispatchers.IO) {
                         val updatesEnabled = dataStore.get(CheckForUpdatesKey, true)
                         val notifEnabled = dataStore.get(UpdateNotificationsEnabledKey, true)
+                        val lastNotified = dataStore.get(LastNotifiedVersionKey, "")
                         if (!updatesEnabled) return@withContext
 
-                        Updater.checkForUpdate().onSuccess { (releaseInfo, hasUpdate) ->
+                        Updater.checkForUpdate(forceRefresh = false).onSuccess { (releaseInfo, hasUpdate) ->
                             if (releaseInfo != null) {
                                 onLatestVersionNameChange(releaseInfo.versionName)
-                                if (hasUpdate && notifEnabled) {
-                                    val downloadUrl = Updater.getDownloadUrlForCurrentVariant(releaseInfo)
-                                    if (downloadUrl != null) {
+                                if (hasUpdate) {
+                                    if (notifEnabled && lastNotified != releaseInfo.versionName) {
+                                        val downloadUrl = Updater.getDownloadUrlForCurrentVariant(releaseInfo)
                                         val intent = Intent(Intent.ACTION_VIEW, downloadUrl.toUri())
 
                                         val flags =
@@ -495,7 +499,7 @@ class MainActivity : ComponentActivity() {
                                                 .Builder(this@MainActivity, "updates")
                                                 .setSmallIcon(R.drawable.update)
                                                 .setContentTitle(getString(R.string.update_available_title))
-                                                .setContentText(releaseInfo.versionName)
+                                                .setContentText("Walvo Music v${releaseInfo.versionName} is available!")
                                                 .setContentIntent(pending)
                                                 .setAutoCancel(true)
                                                 .build()
@@ -505,8 +509,14 @@ class MainActivity : ComponentActivity() {
                                             PackageManager.PERMISSION_GRANTED
                                         ) {
                                             NotificationManagerCompat.from(this@MainActivity).notify(1001, notif)
+                                            this@MainActivity.safeDataStoreEdit { prefs ->
+                                                prefs[LastNotifiedVersionKey] = releaseInfo.versionName
+                                            }
                                         }
                                     }
+                                } else {
+                                    // Once user has updated to latest version, automatically dismiss update notification
+                                    NotificationManagerCompat.from(this@MainActivity).cancel(1001)
                                 }
                             }
                         }

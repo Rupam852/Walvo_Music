@@ -108,6 +108,7 @@ val SelectedYtmPlaylistsKey = stringPreferencesKey("selectedYtmPlaylists")
 val CheckForUpdatesKey = booleanPreferencesKey("checkForUpdates")
 val UpdateNotificationsEnabledKey = booleanPreferencesKey("updateNotifications")
 val LastUpdateCheckTimeKey = longPreferencesKey("lastUpdateCheckTime")
+val LastNotifiedVersionKey = stringPreferencesKey("lastNotifiedVersion")
 
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 val LosslessAudioKey = booleanPreferencesKey("losslessAudio")

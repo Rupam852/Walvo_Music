@@ -1141,4 +1141,27 @@
     <string name="lossless_status_active">Active (FLAC 1411 kbps)</string>
     <string name="lossless_status_not_supported">Not supported for this song</string>
     <string name="lossless_status_disabled">Disabled in settings</string>
+    <string name="set_as_ringtone">Set as Ringtone</string>
+    <string name="ringtone_trim_title">Select Ringtone Section</string>
+    <string name="ringtone_set_success">Ringtone set successfully!</string>
+    <string name="ringtone_permission_required">Permission required to set system ringtone</string>
+    <string name="ringtone_failed">Failed to set ringtone</string>
+    <string name="set_ringtone">Set Ringtone</string>
+    <string name="system_update">System update</string>
+    <string name="up_to_date">Up to date</string>
+    <string name="check_for_updates_screen_title">Check for updates</string>
+    <string name="youre_on_latest_version">You\'re on the latest version</string>
+    <string name="update_available_screen_title">Update Available!</string>
+    <string name="current_version_label">Current version: %s</string>
+    <string name="update_info_title">Update Information</string>
+    <string name="update_info_body">Dynamically it will be deleted after one day.</string>
+    <string name="manual_cleanup_title">Manual Cleanup</string>
+    <string name="manual_cleanup_body">You can manually also delete. Deleting old apk will improve the updater to update properly.</string>
+    <string name="clear_downloaded_updates">Clear Downloaded Updates</string>
+    <string name="clear_downloaded_updates_desc">Delete cached update files</string>
+    <string name="clear_updates_success">Downloaded update files cleared!</string>
+    <string name="download_and_install">Download &amp; Install</string>
+    <string name="downloading_update_progress">Downloading update: %d%%</string>
+    <string name="automatic_update_check">Automatic update check</string>
+    <string name="automatic_update_check_desc">Check for app updates continuously in background every 5 minutes</string>
 </resources>

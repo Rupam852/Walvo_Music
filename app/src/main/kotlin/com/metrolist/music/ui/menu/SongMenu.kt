@@ -158,6 +158,16 @@ fun SongMenu(
         }
     }
 
+    var showSetRingtoneDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    com.metrolist.music.ui.component.SetRingtoneDialog(
+        visible = showSetRingtoneDialog,
+        mediaMetadata = song.toMediaMetadata(),
+        onDismiss = { showSetRingtoneDialog = false },
+    )
+
     var showEditDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -1127,6 +1137,20 @@ fun SongMenu(
                                             }
                                         }
                                     }
+                                },
+                            ),
+                        )
+                        add(
+                            Material3MenuItemData(
+                                title = { Text(text = stringResource(R.string.set_as_ringtone)) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.music_note),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showSetRingtoneDialog = true
                                 },
                             ),
                         )

@@ -128,12 +128,12 @@ object LyricsPlusProvider : LyricsProvider {
     private const val BINIMUM_API_BASE_URL = "https://lyrics-api.binimum.org/"
 
     private val baseUrls = listOf(
-        "https://lyricsplus.binimum.org", //binimum's alternate server
-        "https://lyricsplus.atomix.one/", //meow's mirror
-        "https://lyricsplus.prjktla.my.id", //main server
-        "https://lyricsplus-seven.vercel.app", //jigen's mirror
-        //"https://lyricsplus.prjktla.workers.dev", //ibra's cf workers (disabled due it has 100000 request per day limit)
-        //"https://lyrics-plus-backend.vercel.app", //ibra's vercel (disabled due it's disabled)
+        "https://lyricsplus.prjktla.my.id", // main server
+        "https://lyrics-api.boidu.dev", // boidu mirror
+        "https://api-lyrics.simpmusic.org", // simpmusic mirror
+        "https://lyricsplus.binimum.org", // binimum's alternate server
+        "https://lyricsplus.atomix.one/", // meow's mirror
+        "https://lyricsplus-seven.vercel.app", // jigen's mirror
     )
 
     @Volatile
