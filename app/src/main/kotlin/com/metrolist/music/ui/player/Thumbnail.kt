@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -576,6 +577,13 @@ private fun ThumbnailItem(
                 )
             }
             
+            // Vinyl Record subtle inner groove overlay for album art
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .border(1.5.dp, Color.White.copy(alpha = 0.18f), RoundedCornerShape(dimensions.cornerRadius))
+            )
+
             // Cast button at top-right corner of thumbnail
             CastButton(
                 modifier = Modifier
