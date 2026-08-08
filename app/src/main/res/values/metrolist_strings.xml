@@ -1164,4 +1164,6 @@
     <string name="downloading_update_progress">Downloading update: %d%%</string>
     <string name="automatic_update_check">Automatic update check</string>
     <string name="automatic_update_check_desc">Check for app updates automatically when the app opens</string>
+    <string name="liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_desc">Translucent frosted glass with dynamic ambient light glow</string>
 </resources>
