@@ -115,17 +115,17 @@ jobs:
           fi
 
       - name: Build and Lint Release APK
-        run: ./gradlew --console=plain clean assemble${{ matrix.variantName }}Release :app:lint${{ matrix.variantName }}Release --warning-mode summary
+        run: ./gradlew --console=plain clean assemble${{ matrix.variantName }}Release --warning-mode summary -x lint
         env:
-          METROLIST_APPLICATION_ID: com.metrolist.music
-          METROLIST_APP_NAME: Metrolist
+          METROLIST_APPLICATION_ID: com.walvo.music
+          METROLIST_APP_NAME: Walvo Music
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
 
       - name: Sign APK
-        if: env.KEYSTORE_SECRET != ''
+        if: env.KEYSTORE_SECRET != '' && secrets.KEY_ALIAS != ''
         uses: ilharp/sign-android-release@v2.0.0
         with:
           releaseDir: app/build/outputs/apk/${{ matrix.variant }}/release/

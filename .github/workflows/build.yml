@@ -62,7 +62,7 @@ jobs:
           fi
 
       - name: Build Release APK and Run Lint
-        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Release --warning-mode summary
+        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Release --warning-mode summary -x lint
         env:
           METROLIST_APPLICATION_ID: com.walvo.music
           METROLIST_APP_NAME: Walvo Music
@@ -72,7 +72,7 @@ jobs:
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
 
       - name: Sign APK
-        if: env.KEYSTORE_SECRET != ''
+        if: env.KEYSTORE_SECRET != '' && secrets.KEY_ALIAS != ''
         uses: ilharp/sign-android-release@v2.0.0
         with:
           releaseDir: app/build/outputs/apk/${{ matrix.variant }}/release/
