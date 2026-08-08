@@ -547,7 +547,7 @@ fun SongListItem(
     isSwipeable: Boolean = true,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
-    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
+    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = true)
 
     val content: @Composable () -> Unit = {
          ListItem(
@@ -1176,7 +1176,7 @@ fun YouTubeListItem(
         }
     },
 ) {
-    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
+    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = true)
 
     val content: @Composable () -> Unit = {
         ListItem(
@@ -1842,17 +1842,20 @@ fun SwipeToSongBox(
             )
     ) {
         if (offset.floatValue != 0f) {
-            val (iconRes, bg, tint, align) = if (offset.floatValue > 0)
+            val isSwipingRight = offset.floatValue > 0
+            val progress = (kotlin.math.abs(offset.floatValue) / threshold).coerceIn(0f, 1f)
+            val iconScale = 0.6f + (progress * 0.5f)
+            val (iconRes, bg, tint, align) = if (isSwipingRight)
                 Quadruple(
                     R.drawable.playlist_play,
-                    MaterialTheme.colorScheme.secondary,
-                    MaterialTheme.colorScheme.onSecondary,
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
                     Alignment.CenterStart
                 ) else
                 Quadruple(
                     R.drawable.queue_music,
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.onPrimary,
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    MaterialTheme.colorScheme.onSecondaryContainer,
                     Alignment.CenterEnd
                 )
 
@@ -1861,6 +1864,7 @@ fun SwipeToSongBox(
                     .fillMaxWidth()
                     .height(60.dp)
                     .align(Alignment.Center)
+                    .clip(RoundedCornerShape(16.dp))
                     .background(bg),
                 contentAlignment = align
             ) {
@@ -1869,8 +1873,12 @@ fun SwipeToSongBox(
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 24.dp)
-                        .size(30.dp)
-                        .alpha(0.9f),
+                        .size(28.dp)
+                        .graphicsLayer {
+                            scaleX = iconScale
+                            scaleY = iconScale
+                        }
+                        .alpha(0.85f + (progress * 0.15f)),
                     tint = tint
                 )
             }
