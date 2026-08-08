@@ -196,21 +196,32 @@ internal fun LyricsLine(
     }) {
         @Composable
         fun LyricContent() {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = agentAlignment) {
-                val inactiveAlpha = if (item.isBackground) 0.08f else 0.2f
-                val activeAlpha = 1f
-                val focusedAlpha = if (item.isBackground) 0.5f else 0.3f
-                val targetAlpha = if (!isSynced || item.isBackground || isActiveLine) {
-                    activeAlpha
-                } else if (isAutoScrollEnabled && displayedCurrentLineIndex >= 0) {
-                    when (abs(index - displayedCurrentLineIndex)) {
-                        0 -> focusedAlpha
-                        1 -> 0.2f; 2 -> 0.2f; 3 -> 0.15f; 4 -> 0.1f; else -> 0.08f
-                    }
-                } else inactiveAlpha
-                
-                val animatedAlpha by animateFloatAsState(targetAlpha, tween(250), label = "lyricsLineAlpha")
-                val lineColor = expressiveAccent.copy(alpha = if (item.isBackground) focusedAlpha else animatedAlpha)
+            val inactiveAlpha = if (item.isBackground) 0.15f else 0.45f
+            val activeAlpha = 1f
+            val focusedAlpha = if (item.isBackground) 0.65f else 0.5f
+            val targetAlpha = if (!isSynced || item.isBackground || isActiveLine) {
+                activeAlpha
+            } else if (isAutoScrollEnabled && displayedCurrentLineIndex >= 0) {
+                when (abs(index - displayedCurrentLineIndex)) {
+                    0 -> focusedAlpha
+                    1 -> 0.45f; 2 -> 0.35f; 3 -> 0.25f; 4 -> 0.18f; else -> 0.12f
+                }
+            } else inactiveAlpha
+            
+            val animatedAlpha by animateFloatAsState(targetAlpha, tween(300), label = "lyricsLineAlpha")
+            val lineScale by animateFloatAsState(if (isActiveLine && isSynced) 1.03f else 1f, tween(300), label = "lyricsLineScale")
+            val lineColor = expressiveAccent.copy(alpha = if (item.isBackground) focusedAlpha else animatedAlpha)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        scaleX = lineScale
+                        scaleY = lineScale
+                        transformOrigin = TransformOrigin(0.5f, 0.5f)
+                    },
+                horizontalAlignment = agentAlignment
+            ) {
                 
                 val romanizedTextState by item.romanizedTextFlow.collectAsStateWithLifecycle()
                 val isRomanizedAvailable = romanizedTextState != null
